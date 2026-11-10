@@ -58,7 +58,7 @@ _Every number in the brief gets a row. A number you could not check gets a quest
 
 | Number in the brief | What we checked | What the data said | What we do about it |
 |---|---|---|---|
-| | | | |
+| About one booking in four is cancelled|  checked `is_cancelled` rate across 119,390 bookings, also broken down by hotel | Total 44,224 bookings cancelled: 37.04% overall. **City Hotel:** (41.73%) **Resort Hotel:** (27.76%) | |
 
 ### 7. What is out of scope?
 
