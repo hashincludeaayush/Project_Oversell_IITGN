@@ -6,26 +6,26 @@ Answer each question in one to three sentences. The worked example comes from a 
 
 ### 1. Who is the client, and who pays whom?
 
-> **Worked example.** The client is the home-collection unit of a diagnostics chain. Patients pay per test (B2C); partner hospitals and corporate health camps pay on monthly invoices (B2B). We are the analytics vendor, and the unit head renews us only if idle phlebotomist slots fall.
-
 **Our answer:**
+Our client is the Director of Revenue for a two-hotel group in Portugal 
+1. City Hotel in Lisbon
+2. Resort Hotel in the Algarve
+
+Guests pay the hotel directly or via travel agents for stays. The hotel group engages RateGain as their revenue-science squad, and the engagement renews only if net revenue increases by cutting empty room losses while staying within the walk limits.
 
 <!-- answer:3 -->
 
 ### 2. Who decides, how often, and what does one wrong call cost in each direction?
 
-> **Worked example.** The city operations lead fixes each route's bookings every evening for the next morning. An empty slot costs about Rs 450 of phlebotomist time and fuel. A patient we cannot reach in time costs about Rs 600 in a voucher and a rebooking, plus a complaint.
-
 **Our answer:**
-
+The hotel revenue manager decides every morning how many extra rooms beyond capacity to oversell for each of the next 14 arrival nights.
+- An overly aggressive call (over-selling) causes guests to be walked to a competitor, costing €300 per walked guest
+- An over-cautious call (under-selling) leaves rooms empty, costing the average booked stay value approx €357.85 per missed room.(mean stay value)
 <!-- answer:3 -->
 
 ### 3. What is decided, from what is known when, about which outcome?
 
-> **Worked example.** How many extra visits to book on each route for tomorrow morning, from the bookings known at the end of today, about how many booked patients will not be there when the phlebotomist arrives.
-
-**Our answer:**
-
+**Our answer:** How many extra rooms (k) to keep selling for each hotel on each arrival night, using only booking-level information known by the morning of the run, to match the net distribution of actual cancellations before check-in.
 <!-- answer:3 -->
 
 ### 4. What is the unit of decision, and why that unit?
@@ -40,9 +40,9 @@ Answer each question in one to three sentences. The worked example comes from a 
 
 _Give each one a numerator, a denominator, a window and the exclusions. Draw the metric tree underneath: the north star at the top, the two costs below it, the guardrail beside it._
 
-> **Worked example.** North star: idle slots per route-morning, averaged over a calendar month, excluding routes the lab cancelled. Guardrail: patients turned away per 1,000 completed visits, per calendar month, all routes, at most 5.
 
-**Our answer:**
+**Our answer:** Sum of empty rooms × Mean of stay value + Sum of walked guests × 300
+
 
 <!-- answer:4 -->
 
@@ -58,6 +58,12 @@ _Every number in the brief gets a row. A number you could not check gets a quest
 
 | Number in the brief | What we checked | What the data said | What we do about it |
 |---|---|---|---|
+| "About one booking in four is cancelled" | `is_canceled` across all 119,390 bookings and by hotel | 44,224 cancellations, or 37.04% overall; City Hotel 41.73% (33,102/79,330); Resort Hotel 27.76% (11,122/40,060) | Do not hard-code 25% for the group. Estimate cancellation behavior by hotel and evaluate the flat baseline against the same proof period. |
+| "Most prepaid, non-refundable bookings never turn into a stay" | Cancellation rate by `deposit_type` | `Non Refund`: 14,494/14,587 cancelled (99.36%); `No Deposit`: 29,694/104,641 (28.38%); `Refundable`: 36/162 (22.22%) | The observation is contradicted by this dataset. Treat `deposit_type` as an important candidate input, subject to the timing audit; do not describe non-refundable bookings as guaranteed. |
+| "A vendor list was stopped by the front desk" | Checked whether the supplied rows contain vendor predictions, timestamps, or usage records | No vendor prediction or front-desk usage fields are present | Cannot verify this historical claim from the supplied data. Evaluate our rule at the hotel-night level using the supplied contract instead. |
+| "A vendor demo showed 95% accuracy" | Checked whether the supplied rows contain the demo predictions or an evaluation definition | No demo predictions or accuracy record are present; the client contract scores euros, rooms, and walks per 1,000 instead | Cannot verify the 95% figure. Do not use accuracy as the acceptance criterion; report the contract metrics. |
+| "119,390 bookings from July 2015 to August 2017" | Raw row count, source-column count, and constructed arrival dates | 119,390 rows, 32 source columns, arrival dates 2015-07-01 to 2017-08-31 | Keep the raw loader unchanged and use the stated chronological train/choose/proof split. |
+| "EUR 300 per walked guest" and "at most 10 walks per 1,000" | Compared policy values with raw booking data | These are client/course policy inputs, not values estimable from booking rows | Keep them as fixed contract constants and reject any rule exceeding the walk ceiling. |
 | About one booking in four is cancelled|  checked `is_cancelled` rate across 119,390 bookings, also broken down by hotel | Total 44,224 bookings cancelled: 37.04% overall. **City Hotel:** (41.73%) **Resort Hotel:** (27.76%) | |
 
 ### 7. What is out of scope?
