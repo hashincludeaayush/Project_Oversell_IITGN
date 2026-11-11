@@ -58,7 +58,12 @@ _Every number in the brief gets a row. A number you could not check gets a quest
 
 | Number in the brief | What we checked | What the data said | What we do about it |
 |---|---|---|---|
-| | | | |
+| "About one booking in four is cancelled" | `is_canceled` across all 119,390 bookings and by hotel | 44,224 cancellations, or 37.04% overall; City Hotel 41.73% (33,102/79,330); Resort Hotel 27.76% (11,122/40,060) | Do not hard-code 25% for the group. Estimate cancellation behavior by hotel and evaluate the flat baseline against the same proof period. |
+| "Most prepaid, non-refundable bookings never turn into a stay" | Cancellation rate by `deposit_type` | `Non Refund`: 14,494/14,587 cancelled (99.36%); `No Deposit`: 29,694/104,641 (28.38%); `Refundable`: 36/162 (22.22%) | The observation is contradicted by this dataset. Treat `deposit_type` as an important candidate input, subject to the timing audit; do not describe non-refundable bookings as guaranteed. |
+| "A vendor list was stopped by the front desk" | Checked whether the supplied rows contain vendor predictions, timestamps, or usage records | No vendor prediction or front-desk usage fields are present | Cannot verify this historical claim from the supplied data. Evaluate our rule at the hotel-night level using the supplied contract instead. |
+| "A vendor demo showed 95% accuracy" | Checked whether the supplied rows contain the demo predictions or an evaluation definition | No demo predictions or accuracy record are present; the client contract scores euros, rooms, and walks per 1,000 instead | Cannot verify the 95% figure. Do not use accuracy as the acceptance criterion; report the contract metrics. |
+| "119,390 bookings from July 2015 to August 2017" | Raw row count, source-column count, and constructed arrival dates | 119,390 rows, 32 source columns, arrival dates 2015-07-01 to 2017-08-31 | Keep the raw loader unchanged and use the stated chronological train/choose/proof split. |
+| "EUR 300 per walked guest" and "at most 10 walks per 1,000" | Compared policy values with raw booking data | These are client/course policy inputs, not values estimable from booking rows | Keep them as fixed contract constants and reject any rule exceeding the walk ceiling. |
 
 ### 7. What is out of scope?
 
