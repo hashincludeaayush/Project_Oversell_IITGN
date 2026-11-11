@@ -64,6 +64,7 @@ _Every number in the brief gets a row. A number you could not check gets a quest
 | "A vendor demo showed 95% accuracy" | Checked whether the supplied rows contain the demo predictions or an evaluation definition | No demo predictions or accuracy record are present; the client contract scores euros, rooms, and walks per 1,000 instead | Cannot verify the 95% figure. Do not use accuracy as the acceptance criterion; report the contract metrics. |
 | "119,390 bookings from July 2015 to August 2017" | Raw row count, source-column count, and constructed arrival dates | 119,390 rows, 32 source columns, arrival dates 2015-07-01 to 2017-08-31 | Keep the raw loader unchanged and use the stated chronological train/choose/proof split. |
 | "EUR 300 per walked guest" and "at most 10 walks per 1,000" | Compared policy values with raw booking data | These are client/course policy inputs, not values estimable from booking rows | Keep them as fixed contract constants and reject any rule exceeding the walk ceiling. |
+| About one booking in four is cancelled|  checked `is_cancelled` rate across 119,390 bookings, also broken down by hotel | Total 44,224 bookings cancelled: 37.04% overall. **City Hotel:** (41.73%) **Resort Hotel:** (27.76%) | |
 
 ### 7. What is out of scope?
 
@@ -77,10 +78,10 @@ _Every number in the brief gets a row. A number you could not check gets a quest
 
 | Role | Name | Owns |
 |---|---|---|
-| Client Lead | | |
-| Data Lead | | |
-| Model Lead | | |
-| Build Lead | | |
+| Client Lead | Chaitanya and Harsh | |
+| Data Lead | Rishabh and Aayush | |
+| Model Lead | Chaitanya and Harsh | |
+| Build Lead | Rishabh and Aayush | |
 
 ### 9. What is the one question we are sending the client?
 
