@@ -7,4 +7,4 @@
 | Grill run 1 (required) | Client Lead | | `docs/grill_01_charter.md` | | |
 | Grill run 2 (required) | Build Lead | | `docs/grill_02_prd.md` | | |
 | `karpathy_effect.md` (required) | Build Lead | | `AGENTS.md` | | |
-| AI benchmark chat (required) | Data Lead | | `ai-benchmark` branch. | | |
+| AI benchmark chat (required) | Data Lead | | `ai-benchmark` branch | | |
