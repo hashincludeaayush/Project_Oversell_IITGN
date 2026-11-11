@@ -9,6 +9,11 @@ Answer each question in one to three sentences. The worked example comes from a 
 > **Worked example.** The client is the home-collection unit of a diagnostics chain. Patients pay per test (B2C); partner hospitals and corporate health camps pay on monthly invoices (B2B). We are the analytics vendor, and the unit head renews us only if idle phlebotomist slots fall.
 
 **Our answer:**
+Our client is the Director of Revenue for a two-hotel group in Portugal 
+1. City Hotel in Lisbon
+2. Resort Hotel in the Algarve
+
+Guests pay the hotel directly or via travel agents for stays. The hotel group engages RateGain as their revenue-science squad, and the engagement renews only if net revenue increases by cutting empty room losses while staying within the walk limits.
 
 <!-- answer:3 -->
 
@@ -17,6 +22,7 @@ Answer each question in one to three sentences. The worked example comes from a 
 > **Worked example.** The city operations lead fixes each route's bookings every evening for the next morning. An empty slot costs about Rs 450 of phlebotomist time and fuel. A patient we cannot reach in time costs about Rs 600 in a voucher and a rebooking, plus a complaint.
 
 **Our answer:**
+The hotel revenue manager decides every morning how many extra rooms beyond capacity to oversell for each of the next 14 arrival nights.
 
 <!-- answer:3 -->
 
