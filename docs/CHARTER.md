@@ -6,8 +6,6 @@ Answer each question in one to three sentences. The worked example comes from a 
 
 ### 1. Who is the client, and who pays whom?
 
-> **Worked example.** The client is the home-collection unit of a diagnostics chain. Patients pay per test (B2C); partner hospitals and corporate health camps pay on monthly invoices (B2B). We are the analytics vendor, and the unit head renews us only if idle phlebotomist slots fall.
-
 **Our answer:**
 Our client is the Director of Revenue for a two-hotel group in Portugal 
 1. City Hotel in Lisbon
@@ -19,19 +17,15 @@ Guests pay the hotel directly or via travel agents for stays. The hotel group en
 
 ### 2. Who decides, how often, and what does one wrong call cost in each direction?
 
-> **Worked example.** The city operations lead fixes each route's bookings every evening for the next morning. An empty slot costs about Rs 450 of phlebotomist time and fuel. A patient we cannot reach in time costs about Rs 600 in a voucher and a rebooking, plus a complaint.
-
 **Our answer:**
 The hotel revenue manager decides every morning how many extra rooms beyond capacity to oversell for each of the next 14 arrival nights.
-
+- An overly aggressive call (over-selling) causes guests to be walked to a competitor, costing €300 per walked guest
+- An over-cautious call (under-selling) leaves rooms empty, costing the average booked stay value approx €357.85 per missed room.(mean stay value)
 <!-- answer:3 -->
 
 ### 3. What is decided, from what is known when, about which outcome?
 
-> **Worked example.** How many extra visits to book on each route for tomorrow morning, from the bookings known at the end of today, about how many booked patients will not be there when the phlebotomist arrives.
-
-**Our answer:**
-
+**Our answer:** How many extra rooms (k) to keep selling for each hotel on each arrival night, using only booking-level information known by the morning of the run, to match the net distribution of actual cancellations before check-in.
 <!-- answer:3 -->
 
 ### 4. What is the unit of decision, and why that unit?
@@ -46,9 +40,9 @@ The hotel revenue manager decides every morning how many extra rooms beyond capa
 
 _Give each one a numerator, a denominator, a window and the exclusions. Draw the metric tree underneath: the north star at the top, the two costs below it, the guardrail beside it._
 
-> **Worked example.** North star: idle slots per route-morning, averaged over a calendar month, excluding routes the lab cancelled. Guardrail: patients turned away per 1,000 completed visits, per calendar month, all routes, at most 5.
 
-**Our answer:**
+**Our answer:** Sum of empty rooms × Mean of stay value + Sum of walked guests × 300
+
 
 <!-- answer:4 -->
 
