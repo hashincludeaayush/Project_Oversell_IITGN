@@ -32,20 +32,20 @@ A challenger signs by writing the commit hash they checked. An artifact counts a
 
 | Artifact | Owner | Challenger | Signed at commit |
 |---|---|---|---|
-| `docs/CHARTER.md` and `docs/RFP.md` | | | |
-| `docs/COLUMNS.md` and `src/features.py` | | | |
-| `src/backtest.py` | | | |
-| `docs/PRD.md`, `docs/BUILD_PLAN.md` and `src/nightly.py` | | | |
-| `docs/COMPARISON.md` | | | |
+| `docs/CHARTER.md` and `docs/RFP.md` | Harshvardhan Raj | Chaitanya Bharat Dokara | Pending |
+| `docs/COLUMNS.md` and `src/features.py` | Aayush Singh | Rishabh Kothari | Pending |
+| `src/backtest.py` | Chaitanya Bharat Dokara | Harshvardhan Raj | Pending |
+| `docs/PRD.md`, `docs/BUILD_PLAN.md` and `src/nightly.py` | Rishabh Kothari | Aayush Singh | Pending |
+| `docs/COMPARISON.md` | Aayush Singh | Rishabh Kothari | Pending |
 
 ## Where are our recordings?
 
 | Member | Role | Recording link on the LMS |
 |---|---|---|
-| | Client Lead | |
-| | Data Lead | |
-| | Model Lead | |
-| | Build Lead | |
+| Harshvardhan Raj | Client Lead | To be added |
+| Aayush Singh | Data Lead | To be added |
+| Chaitanya Bharat Dokara | Model Lead | To be added |
+| Rishabh Kothari | Build Lead | To be added |
 
 ## Where does the data come from?
 
