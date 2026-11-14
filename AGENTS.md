@@ -24,7 +24,7 @@ These rules are grounded in `BRIEF.md`, `docs/EVALUATION_CONTRACT.md`, `docs/ROL
 
 Append Andrej Karpathy's coding guidelines using the command documented in `docs/AI_WORKFLOW.md`. Keep these project-specific rules above the general guidelines.
 
-# CLAUDE.md
+## General AI Coding Guidelines
 
 Behavioral guidelines to reduce common LLM coding mistakes. Merge with project-specific instructions as needed.
 
