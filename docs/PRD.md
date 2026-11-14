@@ -289,6 +289,32 @@ The MVP is a local, offline recommendation pipeline. A production version could 
 6. The model estimates cancellation probabilities; it cannot guarantee the actual number of cancellations.
 7. The walk-rate guardrail must be checked carefully before operational use.
 
+### 14-day decision-time data availability
+
+The nightly recommendation system is intended to simulate a Revenue Manager making an overbooking decision 14 days before the guest arrival date.
+
+For each hotel-arrival night, only valid bookings that were recorded on or before the decision date should be included in `bookings_on_book` and used to generate cancellation predictions. Bookings made after the decision date must not be included because they were not available to the Revenue Manager at that time.
+
+A valid booking must not be excluded simply because it is unpaid or uses a pay-at-hotel arrangement. Payment status does not determine whether a reservation existed at the decision date.
+
+**Historical data limitation:** The available final-booking dataset may contain bookings made after the simulated decision date and may not provide historical booking snapshots. Therefore, using the final dataset alone does not automatically reproduce the actual information available to a Revenue Manager 14 days before arrival. A genuine 14-day-ahead backtest requires historical booking snapshots or a reliable reconstruction of booking information as it existed on each decision date.
+
+The MVP must clearly document this limitation and must not claim that future booking arrivals or cancellations can be predicted from information that was unavailable at the decision time.
+
+### Expected cancellations, safety buffer and recommended oversell
+
+These are three separate concepts:
+
+- **Expected cancellations:** The sum of cancellation probabilities predicted for bookings available at the decision date.
+- **Safety buffer:** A validated and frozen allowance that protects the hotel against uncertainty in cancellation predictions.
+- **Recommended oversell:** The additional bookings recommended after accounting for expected cancellations and the safety buffer.
+
+The simplified relationship is:
+
+`Recommended oversell = Expected cancellations - Safety buffer`
+
+The final calculation, rounding rules, non-negative constraints and hotel-specific buffer settings must follow the agreed and validated methodology from the Model Lead. Recommendations must also respect the project's walk-rate ceiling.
+
 ## Q10. What are the main risks and mitigations?
 
 | Risk | Impact | Mitigation |
