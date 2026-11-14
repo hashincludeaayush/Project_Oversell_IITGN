@@ -41,13 +41,19 @@ The selected approach must:
 
 ## Q3. What client wish-list requirement must be addressed?
 
-The exact client wish-list requirement must be taken from the supplied project brief or RFP.
+**Exact client requirement:**
 
-**Requirement:** [Insert the exact wish-list item from the RFP/project brief.]
+"Our marketing team would love to find our hidden guest types."
 
-**Our response:** [Explain how the MVP addresses the requirement.]
+**Our response:**
 
-Do not replace this with an assumed requirement. Confirm the wording against the source document before final submission.
+The MVP will explore differences in cancellation behaviour across available booking characteristics, particularly market segment and customer type. Descriptive analysis of these groups can help the hotel understand which types of bookings have different cancellation patterns.
+
+The initial analysis has examined cancellation rates by market segment and customer type. However, the current MVP does not claim to have discovered statistically validated hidden guest clusters.
+
+The primary objective remains reliable cancellation prediction and cost-effective nightly overbooking. More advanced guest segmentation, including clustering, may be considered as a future extension if it identifies meaningful, interpretable and actionable groups that can support marketing decisions.
+
+Any future segmentation must be validated using historical data and must not introduce target leakage or compromise the overbooking system's walk-rate guardrail.
 
 ## Q4. What will the MVP deliver?
 
