@@ -11,7 +11,9 @@
 
 | Phase | Deliverable | Owner | Planned hours | Actual hours | Done when | Evidence |
 |---|---|---|---:|---:|---|---|
-| POC | Data preparation and feature pipeline | Data Lead | 4 | To be updated | Approved booking-time features are prepared correctly | `src/features.py`, `docs/COLUMNS.md` |
+| POC | Data preparation and feature pipeline | Data Lead | 4 | 3 | Approved booking-time features are prepared correctly | `src/features.py`, `docs/COLUMNS.md` |
+| POC | Leakage and AUC experiment | Data Lead | 3 | 4 | Valid, leaked and random-split AUCs are compared and documented | `src/phase8_leakage_auc.py`, `notebooks/05_leakage_auc_experiment.ipynb`, `docs/PHASE8_FINDINGS.md` |
+| POC | Exploratory data analysis and modeling hypotheses | Data Lead | 6 | 7 | Cancellation patterns are explored and testable, leakage-safe modeling hypotheses are documented | `notebooks/04_exploratory_insights.ipynb`, `docs/PHASE8_FINDINGS.md` |
 | POC | Candidate model and baseline comparison | Model Lead | 6 | To be updated | Candidate methods are evaluated using the agreed business metric | `src/backtest.py`, `docs/COMPARISON.md` |
 | POC | Business-cost and walk-rate validation | Model Lead | 3 | To be updated | Empty rooms, walked guests, cost and walk rate are calculated using the contract | Backtest output |
 | MVP | Nightly recommendation pipeline | Build Lead | 6 | To be updated | The script generates recommendations for the requested hotel-arrival nights | `src/nightly.py` |
@@ -88,6 +90,28 @@
 | expected_cancellations | Sum of cancellation probabilities |
 | buffer | Safety margin |
 | recommended_oversell | Recommended oversell quantity |
+
+### Model integration agreement
+
+Before implementing the nightly recommendation workflow, the Build Lead and Model Lead must agree on the model integration interface.
+
+The Model Lead must provide and document:
+
+1. Exact model artifact filename and storage location.
+2. Model loading method and required dependencies.
+3. Required input feature names, order and data types.
+4. Prediction method, such as `predict_proba()`.
+5. Output format and confirmation of which probability represents cancellation.
+6. Frozen safety buffer methodology and hotel-specific settings.
+7. Any preprocessing or transformation steps required before prediction.
+
+The Build Lead will use this agreed interface to integrate the model into `src/nightly.py`.
+
+The nightly workflow must generate cancellation probabilities rather than relying only on binary cancellation predictions, so expected cancellations can be estimated by aggregating booking-level probabilities.
+
+The Build Lead and Model Lead must jointly investigate integration failures, including missing dependencies, incompatible environments, incorrect feature schemas, model-loading problems and input/output mismatches.
+
+The integration must be reproducible using the project's documented environment and must not silently modify model predictions or buffer settings.
 
 ### MVP completion criteria
 

@@ -53,6 +53,22 @@ _Train the same method twice on the same split, once with first-bin columns only
 
 | Run | Columns | Split | AUC on the proof period |
 |---|---|---|---|
-| A | First bin only | Time | |
-| B | All three bins | Time | |
-| C | First bin only | Random | |
+| A | First bin only | Time | 0.8184 |
+| B | All non-target raw columns | Time | 1.0000 |
+| C | First bin only | Random | 0.8795 |
+
+Phase 8 results use the same logistic-regression pipeline for all runs. Run A
+trains on arrivals before `2016-07-01` and evaluates on proof arrivals from
+`2017-01-01` onward. Run B includes every non-target raw column, including
+amendable and after-the-fact fields, only to demonstrate leakage. Run C uses
+the Bin 1 feature set with a reproducible stratified random 80/20 split.
+
+| Run | Columns | Split | AUC on evaluation data | Interpretation |
+|---|---|---|---:|---|
+| A | First bin only | Time | 0.8184 | Primary MVP evidence |
+| B | All non-target raw columns | Time | 1.0000 | Leakage diagnostic only |
+| C | First bin only | Random | 0.8795 | Sensitivity check, not primary evidence |
+
+The client should believe Run A. Run B is invalid for production because the
+status fields are written after the outcome is known. Run C can be optimistic
+because random training and test rows overlap in time and booking conditions.
