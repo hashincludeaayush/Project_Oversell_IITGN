@@ -4,40 +4,55 @@
 **Owner:** Build Lead
 **Project:** IIT Gandhinagar - Week 6 Build
 **Objective:** Build, test and deliver a working hotel overbooking recommendation pipeline.
+**Status:** Local MVP implementation and validation completed; fresh-checkout verification and final team sign-offs remain open.
 
 ---
 
 ## 1. Build phases
 
-| Phase | Deliverable | Owner | Planned hours | Actual hours | Done when | Evidence |
+| Phase | Deliverable | Owner | Planned hours | Actual / retrospective estimate (hours) | Done when | Evidence |
 |---|---|---|---:|---:|---|---|
-| POC | Data preparation and feature pipeline | Data Lead | 4 | 3 | Approved booking-time features are prepared correctly | `src/features.py`, `docs/COLUMNS.md` |
-| POC | Leakage and AUC experiment | Data Lead | 3 | 4 | Valid, leaked and random-split AUCs are compared and documented | `src/phase8_leakage_auc.py`, `notebooks/05_leakage_auc_experiment.ipynb`, `docs/PHASE8_FINDINGS.md` |
-| POC | Exploratory data analysis and modeling hypotheses | Data Lead | 6 | 7 | Cancellation patterns are explored and testable, leakage-safe modeling hypotheses are documented | `notebooks/04_exploratory_insights.ipynb`, `docs/PHASE8_FINDINGS.md` |
-| POC | Correlation and multicollinearity audit | Data Lead | 2 | To be updated | Numeric correlation, VIF and categorical association are measured and documented without unapproved feature removal | `notebooks/06_correlation_multicollinearity.ipynb`, `docs/CORRELATION_ANALYSIS.md` |
-| POC | Candidate model and baseline comparison | Model Lead | 6 | To be updated | Candidate methods are evaluated using the agreed business and model-selection metrics | `src/backtest.py`, `docs/COMPARISON.md` |
-| POC | Business-cost and walk-rate validation | Model Lead | 3 | To be updated | Empty rooms, walked guests, cost and walk rate are calculated using the contract | Backtest output |
-| MVP | Nightly recommendation pipeline | Build Lead | 6 | To be updated | The script generates recommendations for the requested hotel-arrival nights | `src/nightly.py` |
-| MVP | Model integration | Build Lead and Model Lead | 3 | To be updated | Nightly pipeline successfully loads the selected model and frozen settings | Integration test |
-| MVP | Output validation | Build Lead | 1 | To be updated | Output contains all required columns and valid recommendations | Generated output file |
-| Final | Proof-period evaluation review | Model Lead | 2 | To be updated | Frozen method is evaluated on Proof without further tuning | Backtest results |
-| Final | Uncertainty buffer review | Model Lead and Build Lead | 2 | To be updated | Frozen buffer approach is verified and documented | Comparison results |
-| Final | Full-night caveat and roadmap | Build Lead and Client Lead | 2 | To be updated | Final-book limitation and future improvements are documented | `docs/ROADMAP.md`, PRD |
-| Final | Documentation and presentation | All team members | 3 | To be updated | Required documents and slides are complete and reviewed | Project documents and slides |
+| POC | Data preparation and feature pipeline | Data Lead | 4 | 3 (recorded) | Approved booking-time features are prepared correctly | `src/features.py`, `docs/COLUMNS.md` |
+| POC | Leakage and AUC experiment | Data Lead | 3 | 4 (recorded) | Valid, leaked and random-split AUCs are compared and documented | `src/phase8_leakage_auc.py`, `notebooks/05_leakage_auc_experiment.ipynb`, `docs/PHASE8_FINDINGS.md` |
+| POC | Exploratory data analysis and modeling hypotheses | Data Lead | 6 | 7 (recorded) | Cancellation patterns are explored and leakage-safe modeling hypotheses are documented | `notebooks/04_exploratory_insights.ipynb`, `docs/PHASE8_FINDINGS.md` |
+| POC | Correlation and multicollinearity audit | Data Lead | 2 | Not recorded | Numeric correlation, VIF and categorical association are measured and documented without unapproved feature removal | `notebooks/06_correlation_multicollinearity.ipynb`, `docs/CORRELATION_ANALYSIS.md` |
+| POC | Candidate model and baseline comparison | Model Lead | 6 | Not recorded | Candidate methods are evaluated using agreed business and model-selection metrics | `src/backtest.py`, `docs/COMPARISON.md` |
+| POC | Business-cost and walk-rate validation | Model Lead | 3 | Not recorded | Empty rooms, walked guests, cost and walk rate are calculated using the contract | Backtest output |
+| MVP | Nightly recommendation pipeline | Build Lead | 6 | 6 (estimated retrospectively) | Script generates recommendations for requested hotel-arrival nights | `src/nightly.py`, `output/nightly_recommendations.csv` |
+| MVP | Model integration | Build Lead and Model Lead | 3 | 2 (estimated retrospectively) | Nightly pipeline loads selected model and frozen settings | `models/selected_policy.joblib`, persistence and prediction helpers, tests |
+| MVP | Output validation | Build Lead | 1 | 4 (estimated retrospectively) | Output contains required columns and valid recommendations; tests pass | `output/nightly_recommendations.csv`, `tests/test_nightly.py`, test run |
+| Final | Proof-period evaluation review | Model Lead | 2 | Not recorded | Frozen method is evaluated and caveat is documented | `docs/COMPARISON.md`, `docs/DECISIONS.md` |
+| Final | Uncertainty buffer review | Model Lead and Build Lead | 2 | Included in integration estimate; not separately timed | Saved buffer and calculation are verified against implementation | `models/selected_policy.joblib`, `src/nightly.py`, tests |
+| Final | Full-night caveat and roadmap | Build Lead and Client Lead | 2 | Included in documentation estimate; not separately timed | Final-book limitation and future improvements are documented | `docs/ROADMAP.md`, PRD |
+| Final | Documentation and presentation | All team members | 3 | Build Lead documentation estimate: 3; presentation effort not recorded | Required documents and slides are complete and reviewed | Project documents and team presentation |
 
-**Note:** Planned hours are initial estimates for team discussion, not committed actual effort. Actual hours must be updated from the team's time spent.
+**Hours note:** The three Data Lead values marked “recorded” were already present in the team's plan. Build Lead values are retrospective estimates based on the implementation, debugging, test execution, Git checks and documentation work visible in the project conversation; they are not measured timesheet entries. Other team members' unrecorded hours have deliberately not been invented. “Included” means the work is counted in another estimate and is not added again.
+
+### Build Lead retrospective effort estimate
+
+| Work category | Estimated hours |
+|---|---:|
+| Architecture, requirements and build planning | 3 |
+| Model integration coordination and verification | 2 |
+| Nightly pipeline implementation and debugging | 6 |
+| Tests, execution and output validation | 4 |
+| PRD, Build Plan and documentation review | 3 |
+| Git checks, debugging reports and final integration checks | 2 |
+| **Estimated Build Lead effort to date** | **20** |
+
+This is a reasoned estimate from the work evidenced in the conversation, not an exact time record. It excludes other team members' effort and unfinished presentation/fresh-checkout work.
 
 ---
 
 ## 2. POC - Proof of Concept
 
-**Objective:** Establish whether the available booking data can support a reliable overbooking recommendation.
+**Objective:** Establish whether the available booking data can support an overbooking recommendation.
 
 ### Tasks
 
 1. Inspect the dataset and understand its structure.
-2. Identify the booking-time columns that are safe to use.
-3. Prepare the model features using the Data Lead's approved feature pipeline.
+2. Identify booking-time columns that are safe to use.
+3. Prepare model features using the Data Lead's approved feature pipeline.
 4. Train and compare candidate cancellation-prediction methods.
 5. Establish the client flat-rule baseline.
 6. Calculate empty rooms, walked guests and business cost.
@@ -46,14 +61,14 @@
 
 ### POC completion criteria
 
-- Data preparation works correctly.
-- No target leakage is present.
-- Candidate methods are compared using the same evaluation contract.
-- The client baseline is included.
-- The Train, Choose and Proof periods are kept separate.
-- The walk-rate ceiling is checked.
-- Results are documented with actual outputs.
-- Model-selection decisions and their supporting evidence are recorded.
+- [x] Data preparation and feature interface are available.
+- [x] Leakage analysis and exploratory findings are documented.
+- [x] Candidate methods and baseline comparison are documented in project evaluation evidence.
+- [x] The client baseline is included in the reported comparison.
+- [x] Train, Choose and Proof periods are documented.
+- [x] The walk-rate ceiling is checked in the reported Choose and frozen Proof results.
+- [x] Model-selection decisions and supporting evidence are recorded.
+- [ ] The full correlation/multicollinearity audit and all associated sign-offs have not been independently re-verified as part of this Build Lead close-out.
 
 ### Evidence files
 
@@ -63,6 +78,7 @@
 - `docs/COMPARISON.md`
 - `docs/DECISIONS.md`
 - `docs/EVALUATION_CONTRACT.md`
+- `docs/PHASE8_FINDINGS.md`
 
 ---
 
@@ -72,7 +88,7 @@
 
 ### 3.1 Selected model and settings
 
-The Model Lead has confirmed the following selected machine-learning model:
+The Model Lead selected the following machine-learning policy:
 
 | Setting | Confirmed value |
 |---|---|
@@ -80,72 +96,64 @@ The Model Lead has confirmed the following selected machine-learning model:
 | Number of estimators | 100 |
 | Maximum depth | 12 |
 | Minimum samples per leaf | 20 |
-| Choose-period AUC | 0.8217 |
+| Choose-period AUC | 0.821727 |
+| Choose-period MAE | 7.432268 |
+| Choose-period walks per 1,000 arrivals | 8.15 |
+| Choose-period cost | EUR 1,384,174.34 |
+| Choose-period savings versus Flat Rule | EUR 1,003,755.30 |
 | Logistic Regression Choose-period AUC | 0.8168 |
 | Frozen global buffer | 3 rooms |
 
 The selected Random Forest uses the 22-feature `FEATURE_COLUMNS` interface defined by the Model Lead in `src/models/classifiers.py`.
 
-The Data Lead's `features.MODEL_FEATURES` interface contains 23 approved booking-time predictors. The selected Random Forest intentionally excludes `arrival_date_year` because the training period contains 2015 and 2016, whereas the Proof period and intended later use contain 2017 onward. Seasonality is represented through arrival month and week number.
+The Data Lead's `features.MODEL_FEATURES` interface contains 23 approved booking-time predictors. The selected Random Forest intentionally excludes `arrival_date_year` because Train contains 2015 and 2016, whereas Proof and intended later use contain 2017 onward. Seasonality is represented through arrival month and week number.
 
-The saved model's feature list, order, types and preprocessing must remain consistent during nightly inference.
+The saved model's feature list, order, types and preprocessing are persisted with the selected policy and used during nightly inference.
 
-The model-selection AUC is not a substitute for business-cost and walk-rate validation. The selected policy must still be checked against the Choose-period walk-rate ceiling and evaluated on the frozen Proof period.
+The Choose-period AUC is the model-selection result. It does not replace business-cost or walk-rate validation.
 
-### 3.2 Model integration agreement
+### 3.2 Model integration agreement - completed locally
 
-Before implementing `src/nightly.py`, the Model Lead and Build Lead must confirm:
+The original integration questions have been resolved in the implementation:
 
 1. **Selected model:** Random Forest with 100 estimators, maximum depth 12 and minimum samples per leaf 20.
-2. **Selected features:** The 22-feature `FEATURE_COLUMNS` interface, with `arrival_date_year` intentionally excluded.
-3. **Saved artifact:** `models/selected_policy.joblib`, serialized with `joblib`.
-4. **Preprocessing:** The saved artifact includes the fitted preprocessing pipeline used during training.
-5. **Loading interface:** `models.persistence.load_selected_policy()` loads and validates the saved policy.
-6. **Prediction interface:** `models.helpers.predict_cancellation_probability()` returns the probability for class 1, representing `is_canceled = 1`.
-7. **Frozen settings:** One global buffer of 3 rooms is stored in the selected-policy artifact.
-8. **Buffer calculation:** Integer rounding and non-negative handling match the committed implementation in `src/models/buffer.py`.
-9. **Choose-period validation:** The selected Random Forest with buffer 3 satisfies the walk-rate ceiling on Choose.
-10. **Reproducibility:** A fresh checkout can run the nightly script without retraining or retuning the model.
+2. **Selected features:** 22-feature `FEATURE_COLUMNS` interface; `arrival_date_year` is excluded.
+3. **Saved artifact:** `models/selected_policy.joblib`.
+4. **Serialization:** joblib.
+5. **Loading interface:** `models.persistence.load_selected_policy()`.
+6. **Prediction interface:** `models.helpers.predict_cancellation_probability()`.
+7. **Positive class:** For binary `is_canceled`, probability column 1 represents `is_canceled = 1` (cancelled).
+8. **Frozen settings:** Global buffer of 3 rooms, persisted in the selected policy.
+9. **Buffer calculation:** `max(0, round(expected_cancellations - buffer))`, using the rounding behaviour in the implementation.
+10. **Choose validation:** Selected Random Forest with buffer 3 reports 8.15 walks per 1,000 arrivals, below the ceiling of 10.
+11. **Nightly behaviour:** Loads the saved artifact and does not retrain, refit preprocessing or retune the buffer.
 
-The Build Lead must use this artifact and interface rather than inventing a filename or independently recreating the Model Lead's preprocessing, feature interface or buffer logic.
-
-The frozen global buffer of 3 is the MVP uncertainty treatment. It was selected on
-Choose under the walk ceiling and is applied unchanged during Proof and nightly
-inference. The MVP does not add a second uncertainty adjustment or tune a
-hotel-specific buffer; that extension belongs in the roadmap.
+The local integration and tests have been verified. Execution from a separate fresh checkout remains unverified and is still a delivery check.
 
 ### 3.3 Nightly recommendation pipeline
 
 **File:** `src/nightly.py`
 **Owner:** Build Lead
 
-### Tasks
+#### Implemented behaviour
 
-1. Create `src/nightly.py`.
-2. Read the booking input data.
-3. Prepare booking rows using the Data Lead's approved `features.prepare_bookings()` interface, supporting prediction rows that do not contain the actual cancellation target.
-4. Use the selected model's exact 22-feature `FEATURE_COLUMNS` interface.
-5. Load the committed Random Forest pipeline and frozen settings from `models/`.
-6. Generate one cancellation probability per booking.
-7. Confirm that every probability is finite and between 0 and 1.
-8. Preserve booking-row order when associating predictions with the original bookings.
-9. Aggregate booking counts and predicted cancellation probabilities by `hotel` and `arrival_date`.
-10. Calculate expected cancellations from the sum of booking-level cancellation probabilities.
-11. Apply the frozen global buffer of 3 rooms using the Model Lead's verified calculation.
-12. Calculate the recommended oversell quantity.
-13. Generate the required recommendation table.
-14. Validate the output and run tests.
+1. Read the booking input data.
+2. Prepare booking rows using `features.prepare_bookings(raw, require_target=False)`.
+3. Load the selected saved policy from `models/selected_policy.joblib`.
+4. Use the saved model pipeline and its persisted feature configuration.
+5. Generate one cancellation probability per booking through the shared prediction helper.
+6. Validate prediction count, finiteness and probability bounds [0, 1].
+7. Preserve booking-row association before aggregation.
+8. Aggregate booking counts and predicted cancellation probabilities by `hotel` and `arrival_date`.
+9. Read the frozen global buffer from the saved policy.
+10. Calculate the non-negative integer oversell recommendation.
+11. Validate requested hotel/date coverage and output values.
+12. Write the recommendation CSV.
+13. Run unit/integration tests and validate the generated output.
 
-The nightly script must not:
+The nightly script does not retrain the model, refit preprocessing, retune the buffer, select a different model, use actual cancellation outcomes to generate predictions or use post-booking outcome fields as predictors.
 
-- Retrain the model.
-- Refit preprocessing.
-- Retune the buffer.
-- Select a different model.
-- Use actual cancellation outcomes to generate predictions.
-- Use post-booking outcome fields as model predictors.
-
-### Required output columns
+#### Required output columns
 
 | Column | Meaning |
 |---|---|
@@ -156,42 +164,51 @@ The nightly script must not:
 | `buffer` | Frozen global safety margin of 3 rooms |
 | `recommended_oversell` | Recommended oversell quantity |
 
-### Oversell calculation
+#### Implemented oversell calculation
 
-The conceptual relationship is:
+`recommended_oversell = max(0, round(expected_cancellations - buffer))`
 
-`Recommended oversell = Expected cancellations - Safety buffer`
+The saved buffer is used. The nightly script does not independently tune it or create hotel-specific values.
 
-The actual integer conversion, rounding and non-negative handling must match the Model Lead's committed implementation in `src/models/buffer.py`.
+#### Verified local execution
 
-The Build Lead must not independently change the calculation or introduce hotel-specific buffers without a formally agreed change to the methodology.
-
-### MVP completion criteria
-
-- The nightly script executes successfully.
-- The selected Random Forest model is loaded correctly.
-- The saved preprocessing pipeline is included and used.
-- The model uses the agreed 22-feature interface.
-- `arrival_date_year` is excluded from the selected classifier.
-- The frozen global buffer of 3 rooms is loaded correctly.
-- The script generates one finite cancellation probability between 0 and 1 per input booking.
-- Prediction order is preserved before aggregation.
-- The script generates one row per required hotel and arrival night.
-- The output covers the requested 14-night period.
-- The output contains all six required columns.
-- All output values are valid.
-- The script does not retrain or retune the model or buffer.
-- The script does not modify `src/contract.py`.
-- The output can be reproduced from the same inputs and saved model.
-- A fresh checkout can execute the nightly pipeline without first running model training.
-
-### Expected command
+Run from the project root in the activated project environment:
 
 ```powershell
-python src/nightly.py --from 2017-08-18 --nights 14
+& .\.venv\Scripts\python.exe src\nightly.py --from 2017-08-18 --nights 14
 ```
 
-The default CSV output is `output/nightly_recommendations.csv` (`--output` can override it). The model-loading interface uses `models/selected_policy.joblib` through the persistence helper.
+Verified result:
+
+- 28 output rows.
+- 14 arrival nights.
+- Two hotels.
+- Six required output columns.
+- Buffer value 3 throughout the generated output.
+- Valid finite probability aggregates and no negative oversell recommendations.
+- Output written to `output/nightly_recommendations.csv`.
+- Full test suite: **58 passed**.
+
+The command uses the available final-book dataset. It is a verified local pipeline execution, not a genuine historical T-14 simulation. A separate fresh-checkout execution has not been verified.
+
+#### MVP completion criteria
+
+- [x] Nightly script executes successfully in the current project environment.
+- [x] Selected Random Forest policy loads successfully.
+- [x] Saved preprocessing pipeline is included in the artifact and used.
+- [x] The selected model uses its persisted 22-feature interface.
+- [x] `arrival_date_year` is excluded from the selected classifier.
+- [x] Frozen global buffer of 3 rooms is loaded from the saved policy.
+- [x] One finite cancellation probability in [0, 1] is produced per input booking.
+- [x] Booking predictions are associated with their input rows before aggregation.
+- [x] Output covers the requested 14-night period for both hotels in the verified run.
+- [x] Output contains all six required columns.
+- [x] Local output values were validated.
+- [x] Nightly execution does not retrain or retune the model or buffer.
+- [x] `src/contract.py` was not modified as part of the verified Build Lead changes.
+- [x] Output is generated using the saved policy and current input data.
+- [ ] Execution from a separate fresh checkout has not yet been verified.
+- [ ] Genuine as-of-date/T-14 input reconstruction has not been implemented or validated.
 
 ### Important operational limitation
 
@@ -205,43 +222,43 @@ This limitation must be disclosed in the PRD, evaluation results and presentatio
 
 ## 4. Final - Validation and delivery
 
-**Objective:** Confirm that the MVP meets the project requirements and clearly communicate its limitations.
+**Objective:** Confirm that the MVP meets project requirements and communicate its limitations accurately.
 
-### Tasks
+### Tasks and current status
 
-1. Run the frozen model on the Proof period.
-2. Compare the selected approach against the client baseline.
-3. Confirm the walk-rate guardrail.
-4. Review and verify the frozen global buffer.
-5. Compare business cost, empty rooms and walked guests.
-6. Document the final-book versus 14-day-on-book limitation.
-7. Complete the product roadmap.
-8. Review the PRD and Build Plan.
-9. Complete and validate presentation slides.
-10. Run the complete test suite.
-11. Verify that all required model and settings artifacts are committed.
-12. Confirm that the nightly pipeline works from a fresh checkout.
+1. **Run the frozen model on Proof:** Corrected follow-up results are recorded in `docs/COMPARISON.md`; the prior Proof-exposure caveat is disclosed.
+2. **Compare with the client baseline:** Reported savings versus Flat Rule are EUR 1,631,200.31.
+3. **Confirm the walk-rate guardrail:** Frozen Proof result is 5.252 walks per 1,000 arrivals, below the maximum of 10.
+4. **Review the frozen buffer:** Saved global buffer is 3 rooms; nightly implementation reads it from the saved policy.
+5. **Compare business outcomes:** Frozen Proof reports 4,609 empty rooms and 131 walked guests.
+6. **Document final-book limitation:** Included in the PRD and this Build Plan; presentation disclosure remains required.
+7. **Complete roadmap:** `docs/ROADMAP.md` is the project evidence location; final content should be checked by the team before sign-off.
+8. **Review PRD and Build Plan:** Updated to reflect implementation and evaluation evidence.
+9. **Complete presentation slides:** Owned by the team presentation lead; final slide review/sign-off remains a team delivery item.
+10. **Run full test suite:** 58 tests passed in the verified local run.
+11. **Verify committed model/settings artifacts:** Artifact exists locally; final commit/remote availability must be confirmed before delivery.
+12. **Run from a fresh checkout:** Not yet verified.
 
 ### Final completion criteria
 
-- Proof-period results are available from the actual backtest.
-- No tuning has been performed using Proof results.
-- The final method and its parameters are documented.
-- The selected method's walk-rate ceiling is checked and reported.
-- Total empty rooms, walked guests, walks per 1,000 arrivals and total business cost in EUR are reported.
-- The PRD contains actual evaluation results.
-- The roadmap identifies production improvements.
-- The final-book versus 14-day booking-snapshot limitation is clearly disclosed.
-- The required documents and presentation are ready.
-- The saved model and settings are reproducible from a fresh checkout.
-- The complete test suite passes.
-- Required challenger reviews and sign-offs are completed with supporting commit evidence.
+- [x] Frozen follow-up Proof-period results are available in project evaluation evidence.
+- [x] The Proof-exposure caveat is disclosed; Proof is not described as a completely untouched holdout.
+- [x] Final method and parameters are documented.
+- [x] Walk-rate ceiling is checked and reported for Choose and frozen Proof.
+- [x] Empty rooms, walked guests, walks per 1,000 arrivals and business cost are reported.
+- [x] PRD records evaluation results and implementation status.
+- [ ] Final roadmap review/sign-off is not independently confirmed here.
+- [x] Final-book versus 14-day booking-snapshot limitation is disclosed in the PRD and Build Plan.
+- [ ] Presentation completion and accuracy review remain with the presentation lead/team.
+- [ ] Saved model and settings availability from a separate fresh checkout remains to be verified.
+- [x] Full local test suite passed (58 tests).
+- [ ] Required challenger reviews and sign-offs with supporting commit evidence remain to be confirmed.
 
 ---
 
 ## 5. Production roadmap items
 
-These are possible extensions beyond the MVP. Estimates are provisional and should be agreed with the team.
+These are possible extensions beyond the MVP. Estimates are preliminary planning estimates, not completed work or committed delivery times.
 
 | Production improvement | Purpose | Initial effort estimate |
 |---|---|---:|
@@ -251,9 +268,9 @@ These are possible extensions beyond the MVP. Estimates are provisional and shou
 | Model performance monitoring | Detect deterioration in prediction quality | 8 hours |
 | Manual override and audit log | Allow managers to adjust recommendations and record reasons | 6 hours |
 | High walk-risk alerts | Notify managers when a night approaches the walk-rate limit | 5 hours |
-| As-of-date booking snapshots | Reproduce the information actually available at the 14-day decision point | 10 hours |
+| As-of-date booking snapshots | Reproduce information actually available at the 14-day decision point | 10 hours |
 
-These estimates are preliminary planning estimates, not completed work or committed delivery times.
+These estimates should be refined after the production interfaces and deployment environment are defined.
 
 ---
 
@@ -269,7 +286,7 @@ These estimates are preliminary planning estimates, not completed work or commit
 | Must have | Nightly recommendation table | MVP requirement |
 | Should have | Uncertainty buffer comparison | Final validation |
 | Should have | Clear limitation documentation | Final delivery |
-| Should have | Reproducible model integration | MVP validation |
+| Should have | Reproducible model integration | MVP validation; fresh-checkout check open |
 | Could have | Dashboard | Future production work |
 | Could have | Live booking integration | Future production work |
 | Could have | Automated alerts | Future production work |
@@ -284,49 +301,52 @@ These estimates are preliminary planning estimates, not completed work or commit
 
 ### Data and feature preparation
 
-- [ ] `src/contract.py` remains unchanged.
-- [ ] Feature preparation uses the Data Lead's approved interface.
-- [ ] The selected classifier uses the agreed 22-feature interface.
-- [ ] `arrival_date_year` is excluded from the selected Random Forest.
-- [ ] `is_canceled` is used only as the prediction target.
-- [ ] No post-booking information is used as a model predictor.
-- [ ] Prediction rows can be prepared without requiring the actual cancellation target.
+- [x] `src/contract.py` remains unchanged in the verified Build Lead work.
+- [x] Feature preparation uses the Data Lead's approved interface.
+- [x] Selected classifier uses the agreed 22-feature interface.
+- [x] `arrival_date_year` is excluded from the selected Random Forest.
+- [x] `is_canceled` is used as the target, not as a predictor.
+- [x] Post-booking outcome fields are excluded from model predictors.
+- [x] Prediction rows can be prepared without requiring the actual cancellation target.
 
 ### Model and evaluation
 
-- [x] Train, Choose and Proof periods are separated.
-- [x] The client baseline is included.
-- [x] The selected Random Forest parameters are documented.
-- [x] The Choose-period selection evidence is recorded.
-- [x] The global buffer of 3 rooms is saved.
-- [x] The selected model with buffer 3 is checked against the Choose-period walk-rate ceiling.
-- [x] The frozen Proof evaluation reports business-cost metrics.
-- [x] No tuning is performed using Proof results.
+- [x] Train, Choose and Proof periods are documented.
+- [x] Client baseline is included in the reported comparison.
+- [x] Selected Random Forest parameters are documented.
+- [x] Choose-period selection evidence is recorded.
+- [x] Global buffer of 3 rooms is persisted in the selected policy.
+- [x] Selected model with buffer 3 is below the Choose walk-rate ceiling (8.15 per 1,000).
+- [x] Frozen follow-up Proof metrics are reported.
+- [ ] Proof has not been represented as a completely untouched holdout; the earlier exploratory exposure is explicitly disclosed.
+- [x] No model or buffer retuning is claimed after the corrected frozen follow-up; the earlier exposure caveat remains disclosed.
 
 ### Nightly pipeline
 
-- [ ] The selected model and preprocessing pipeline load successfully.
-- [ ] The nightly script loads the frozen settings.
-- [ ] The positive probability class represents `is_canceled = 1`.
-- [ ] One finite probability between 0 and 1 is generated per booking.
-- [ ] Prediction order is preserved.
-- [ ] Predictions are aggregated by hotel and arrival date.
-- [ ] The global buffer calculation matches the Model Lead's implementation.
-- [ ] The output covers the requested 14-night period.
-- [ ] The output contains all six required columns.
-- [ ] All output values are valid.
-- [ ] The nightly pipeline does not retrain or retune the model.
-- [ ] The fresh-checkout execution is tested.
+- [x] Selected model and preprocessing pipeline load successfully in the current environment.
+- [x] Nightly script loads frozen settings.
+- [x] Positive probability class represents `is_canceled = 1`.
+- [x] One finite probability between 0 and 1 is generated per booking and validated.
+- [x] Input row association is preserved before aggregation.
+- [x] Predictions are aggregated by hotel and arrival date.
+- [x] Global buffer calculation matches the saved policy implementation.
+- [x] Verified output covers the requested 14-night period.
+- [x] Output contains all six required columns.
+- [x] Local output values are valid.
+- [x] Nightly pipeline does not retrain or retune the model.
+- [ ] Fresh-checkout execution is not yet tested.
+- [ ] Genuine historical T-14 booking availability is not yet validated.
 
 ### Final documentation and delivery
 
-- [ ] The final-book versus 14-day booking-snapshot limitation is documented.
-- [ ] `pytest -q` passes.
-- [ ] The PRD and roadmap reflect actual project results.
-- [ ] No numerical results are estimated or fabricated.
-- [ ] The challenger has reviewed and signed the relevant artifact.
-- [ ] Required sign-offs include supporting commit evidence.
-- [ ] Presentation slides accurately describe the implemented MVP and its limitations.
+- [x] Final-book versus 14-day booking-snapshot limitation is documented.
+- [x] `pytest -q` completed with 58 passing tests in the verified run.
+- [x] PRD reflects actual implementation and reported evaluation results.
+- [ ] Final roadmap review/sign-off is not independently confirmed.
+- [x] Numerical model and business results are copied from project evaluation evidence, not estimated.
+- [ ] Challenger review and sign-off remain to be confirmed.
+- [ ] Presentation slides must be checked by the presentation lead/team for implementation accuracy and limitation disclosure.
+- [ ] Fresh-checkout artifact availability and reproducibility remain to be verified.
 
 ---
 
@@ -339,12 +359,12 @@ The Build Lead is responsible for:
 3. Coordinating with the Model Lead to confirm saved-model and settings interfaces.
 4. Developing and validating `src/nightly.py`.
 5. Ensuring the nightly pipeline uses the saved model without retraining or retuning.
-6. Validating probability outputs, row ordering, aggregation and recommendation-table structure.
+6. Validating probability outputs, row association, aggregation and recommendation-table structure.
 7. Maintaining `AGENTS.md`.
 8. Maintaining `docs/PRD.md` and `docs/ROADMAP.md`.
 9. Tracking team dependencies and unresolved decisions.
-10. Ensuring the implementation follows the evaluation contract.
-11. Reviewing the final deliverables before submission.
-12. Preparing and validating the Build Lead presentation slides.
+10. Ensuring implementation follows the evaluation contract.
+11. Reviewing final deliverables before submission.
+12. Coordinating Build Lead input to the presentation; slide production remains with the designated presentation lead/team.
 
-**Important:** A document is not considered complete merely because it exists. It must be implemented or reviewed, tested where applicable, and supported by evidence.
+**Completion principle:** A document is not considered complete merely because it exists. It must reflect the actual implementation or decision, be tested where applicable, and be supported by evidence. Open items must remain visibly open rather than being marked complete without verification.
