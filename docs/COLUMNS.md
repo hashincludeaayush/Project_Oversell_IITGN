@@ -8,7 +8,7 @@ Put every column in exactly one bin, by when the hotel learns its value:
 2. **Amendable**: known at booking but it can change before arrival, or it is only partly known at booking.
 3. **After the fact**: written at check-in, during the stay, or when the outcome is already known.
 
-Only the first bin feeds the MVP. A second-bin column may be tried with its caveat written beside it. A third-bin column never feeds a method. The dataset article (Antonio, de Almeida and Nunes, 2019) says how several columns were recorded; cite it where it settles a bin.
+Only the first bin feeds the MVP. A second-bin column may be tried with its caveat written beside it. A column in Bin 3 never feeds a method. The dataset article (Antonio, de Almeida and Nunes, 2019) says how several columns were recorded; cite it where it settles a bin.
 
 The evidence column holds the number or the source that settled the bin, for example a rate you computed, or a sentence from the dataset article.
 
@@ -49,19 +49,19 @@ The evidence column holds the number or the source that settled the bin, for exa
 
 ## What happens to a method when the late columns go in?
 
-_Train the same method twice on the same split, once with first-bin columns only and once with the second and third bins added. Then run the first version once more on a random split. Record the three AUCs here and say which one the client should believe._
-
-| Run | Columns | Split | AUC on the proof period |
-|---|---|---|---|
-| A | First bin only | Time | 0.8184 |
-| B | All non-target raw columns | Time | 1.0000 |
-| C | First bin only | Random | 0.8795 |
+_Train the same method twice on the same split, once with first-bin columns only and once with Bin 2 and Bin 3 columns added. Then run the first version once more on a random split. Record the three AUCs here and say which one the client should believe._
 
 Phase 8 results use the same logistic-regression pipeline for all runs. Run A
 trains on arrivals before `2016-07-01` and evaluates on proof arrivals from
 `2017-01-01` onward. Run B includes every non-target raw column, including
 amendable and after-the-fact fields, only to demonstrate leakage. Run C uses
 the Bin 1 feature set with a reproducible stratified random 80/20 split.
+An ablation of Run B reduced AUC from 1.0000 to 0.7885 when
+`reservation_status` was removed, while removing only
+`reservation_status_date` left AUC at 1.0000. Removing both status fields
+gave AUC 0.8452. This identifies `reservation_status` as the principal
+source of the perfect leakage score, although other late fields also carry
+future information and remain invalid for production.
 
 | Run | Columns | Split | AUC on evaluation data | Interpretation |
 |---|---|---|---:|---|
