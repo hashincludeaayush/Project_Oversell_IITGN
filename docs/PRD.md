@@ -4,7 +4,7 @@
 **Project:** Project Oversell â€“ IIT Gandhinagar
 **Role:** Build Lead
 **Hotels:** City Hotel (Lisbon) and Resort Hotel (Algarve)
-**Status:** MVP specification â€“ model selection confirmed; artifact integration and final proof evaluation pending
+**Status:** MVP implementation and corrected follow-up evaluation reported (2026-11-16); see the historical Proof-exposure caveat in `docs/DECISIONS.md`.
 
 ---
 
@@ -39,13 +39,17 @@ The Model Lead has confirmed the following selected machine-learning model:
 - **Number of estimators:** 100
 - **Maximum depth:** 12
 - **Minimum samples per leaf:** 20
-- **Choose-period AUC:** 0.8217
+- **Choose-period AUC:** 0.821727
+- **Choose-period MAE:** 7.432268
+- **Choose-period walks per 1,000:** 8.15 (within the maximum of 10)
+- **Choose-period cost:** EUR 1,384,174.34
+- **Choose-period savings versus Flat Rule:** EUR 1,003,755.30
 - **Logistic Regression Choose-period AUC:** 0.8168
 - **Frozen global buffer:** 3 rooms
 
 The Model Lead has also confirmed that `arrival_date_year` is intentionally excluded from the selected classifier. The training period contains 2015 and 2016, while the Proof period and intended later use contain 2017 onward. Excluding the year prevents the tree-based model from relying on year-specific splits that may not generalise to later years. Seasonality is represented through `arrival_date_month` and `arrival_date_week_number`.
 
-The selected model and settings must still be saved and committed in the agreed format before Build Lead integration is complete.
+The fitted Random Forest pipeline and frozen buffer were persisted in `models/selected_policy.joblib` before Proof scoring. The selected model was fitted on Train; model and buffer selection used Choose only.
 
 The selected approach must:
 
@@ -294,15 +298,20 @@ The buffer must remain frozen during nightly execution. It must not be separatel
 
 The project evaluates the selected approach against the client baseline using the supplied business contract.
 
-The Proof-period comparison must report:
+The corrected follow-up evaluated only the frozen Random Forest policy and the required client flat-rule reference on Proof. Its reported results are:
 
-| Metric | Client baseline | Selected approach |
-|---|---:|---:|
-| Total empty rooms | To be filled from actual Proof results | To be filled from actual Proof results |
-| Total walked guests | To be filled from actual Proof results | To be filled from actual Proof results |
-| Walks per 1,000 arrivals | To be filled from actual Proof results | To be filled from actual Proof results |
-| Total business cost (EUR) | To be filled from actual Proof results | To be filled from actual Proof results |
-| Walk-rate guardrail | Must be <= 10 | Must be <= 10 |
+| Metric | Frozen Random Forest, buffer 3 |
+|---|---:|
+| AUC | 0.827749 |
+| MAE | 7.710066 |
+| Total empty rooms | 4,609 |
+| Total walked guests | 131 |
+| Walks per 1,000 arrivals | 5.252 |
+| Total business cost (EUR) | EUR 2,251,729.23 |
+| Savings versus Flat Rule | EUR 1,631,200.31 |
+| Walk-rate guardrail | Satisfied (maximum 10) |
+
+The reported savings compare the selected policy with the required flat-rule reference. The historic `output.txt` is retained unchanged and separately records the earlier run that scored every candidate on Proof before selection. Since those Proof results had already been examined, the corrected follow-up is not a completely untouched holdout; see `docs/DECISIONS.md` and `docs/COMPARISON.md`.
 
 Success criteria:
 
@@ -314,7 +323,7 @@ Success criteria:
 6. The saved model and frozen settings must be reproducible from a fresh checkout without retraining during nightly execution.
 7. The output must satisfy the required column, data-type and probability-validation expectations.
 
-The Choose-period AUC of 0.8217 is a model-selection result, not a Proof-period business outcome. It must not be presented as evidence that the final policy has met the financial-cost or walk-rate requirements.
+The Choose-period AUC of 0.821727 is the model-selection result: the Random Forest was selected by highest Choose AUC among candidates meeting the Choose walk ceiling. It is separate from the Proof business outcomes reported above.
 
 All Proof-period numerical results must be copied from the actual frozen backtest output. No results should be estimated or fabricated.
 
