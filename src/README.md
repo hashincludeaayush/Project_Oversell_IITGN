@@ -8,7 +8,7 @@
 | `backtest.py` | Yours | Model Lead | Fit methods on Train, select the method and buffer on Choose, freeze and save the selected policy to `models/` before Proof, then evaluate the frozen policy and required flat-rule reference |
 | `nightly.py` | Yours | Build Lead | Read a bookings file and the saved method, and write the oversell table for the nights asked for |
 
-Commit `models/selected_policy.joblib` after the Train/Choose selection and freeze step. The nightly command loads this saved policy without retraining. The corrected Proof evaluation has not yet been rerun; see `docs/DECISIONS.md` for the historical protocol note. The nightly CSV defaults to `output/nightly_recommendations.csv`; pass `--output` to choose another path. The dataset is a static final-book export, so this command does not reconstruct a genuine historical T-14 snapshot.
+`models/selected_policy.joblib` contains the fitted Train pipeline and frozen Choose selection. The corrected follow-up on 2026-11-16 evaluated only the frozen winner and the required flat-rule reference on Proof; because Proof results had already been examined in the historical run, it is not an untouched holdout. See `docs/COMPARISON.md` and `docs/DECISIONS.md`. The nightly CSV defaults to `output/nightly_recommendations.csv`; pass `--output` to choose another path. The dataset is a static final-book export, so this command does not reconstruct a genuine historical T-14 snapshot.
 
 ```bash
 python src/backtest.py
