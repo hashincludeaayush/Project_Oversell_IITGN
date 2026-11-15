@@ -32,15 +32,14 @@ A challenger signs by writing the commit hash they checked. An artifact counts a
 
 | Artifact | Owner | Challenger | Signed at commit |
 |---|---|---|---|
-| `docs/CHARTER.md` and `docs/RFP.md` | Harshvardhan Raj | Chaitanya Bharat Dokara | `a2c1fb9` (delegated) |
-| `docs/COLUMNS.md` and `src/features.py` | Aayush Singh | Rishabh Kothari | `a2c1fb9` (delegated) |
-| `src/backtest.py` | Chaitanya Bharat Dokara | Harshvardhan Raj | `a2c1fb9` (delegated) |
-| `docs/PRD.md`, `docs/BUILD_PLAN.md` and `src/nightly.py` | Rishabh Kothari | Aayush Singh | `a2c1fb9` (delegated) |
-| `docs/COMPARISON.md` | Aayush Singh | Rishabh Kothari | `a2c1fb9` (delegated) |
+| `docs/CHARTER.md` and `docs/RFP.md` | Harshvardhan Raj | Chaitanya Bharat Dokara | `4dbfa8d` (CHARTER), `dcc4988` (RFP) |
+| `docs/COLUMNS.md` and `src/features.py` | Aayush Singh | Rishabh Kothari | `d8f36cf` (COLUMNS), `7b6df3b` (features) |
+| `src/backtest.py` | Chaitanya Bharat Dokara | Harshvardhan Raj | `38c3b7e` |
+| `docs/PRD.md`, `docs/BUILD_PLAN.md` and `src/nightly.py` | Rishabh Kothari | Aayush Singh | `0201d6a` (PRD), `c11f93e` (BUILD_PLAN), `b2bea85` (nightly) |
+| `docs/COMPARISON.md` | Aayush Singh | Rishabh Kothari | `a2c1fb9` |
 
-These challenger signatures were recorded under Aayush Singh's delegated
-authority after validating the committed state, running the benchmark and
-confirming 58 passing tests.
+Each hash identifies the repository commit containing the signed artifact.
+The artifacts were validated with the benchmark and the 58-test suite.
 
 ## Where are our recordings?
 
