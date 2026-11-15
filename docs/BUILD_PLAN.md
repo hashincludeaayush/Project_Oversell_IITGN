@@ -14,6 +14,7 @@
 | POC | Data preparation and feature pipeline | Data Lead | 4 | 3 | Approved booking-time features are prepared correctly | `src/features.py`, `docs/COLUMNS.md` |
 | POC | Leakage and AUC experiment | Data Lead | 3 | 4 | Valid, leaked and random-split AUCs are compared and documented | `src/phase8_leakage_auc.py`, `notebooks/05_leakage_auc_experiment.ipynb`, `docs/PHASE8_FINDINGS.md` |
 | POC | Exploratory data analysis and modeling hypotheses | Data Lead | 6 | 7 | Cancellation patterns are explored and testable, leakage-safe modeling hypotheses are documented | `notebooks/04_exploratory_insights.ipynb`, `docs/PHASE8_FINDINGS.md` |
+| POC | Correlation and multicollinearity audit | Data Lead | 2 | To be updated | Numeric correlation, VIF and categorical association are measured and documented without unapproved feature removal | `notebooks/06_correlation_multicollinearity.ipynb`, `docs/CORRELATION_ANALYSIS.md` |
 | POC | Candidate model and baseline comparison | Model Lead | 6 | To be updated | Candidate methods are evaluated using the agreed business and model-selection metrics | `src/backtest.py`, `docs/COMPARISON.md` |
 | POC | Business-cost and walk-rate validation | Model Lead | 3 | To be updated | Empty rooms, walked guests, cost and walk rate are calculated using the contract | Backtest output |
 | MVP | Nightly recommendation pipeline | Build Lead | 6 | To be updated | The script generates recommendations for the requested hotel-arrival nights | `src/nightly.py` |
