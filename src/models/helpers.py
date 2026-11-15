@@ -1,3 +1,4 @@
+import numpy as np
 import pandas as pd
 from sklearn.metrics import roc_auc_score, mean_absolute_error
 
@@ -49,30 +50,79 @@ def run_on_choose(name, model_factory, train, choose):
         "metrics": metrics,
     }
 
+def _score_candidate(candidate: dict, bookings) -> dict:
+    """Score a fitted candidate on a period using its already chosen buffer."""
+    model = candidate["model"]
+    buffer = candidate["buffer"]
+    probabilities = predict_cancellation_probability(model, bookings)
+    nightly = contract.nightly_table(bookings, probabilities)
+    metrics = evaluate_buffer(nightly, buffer)
+    return {
+        "method": candidate["method"],
+        "model": model,
+        "buffer": buffer,
+        "probabilities": probabilities,
+        "nights": nightly,
+        "metrics": metrics,
+    }
+
+
 def run_on_proof(candidate: dict, proof) -> dict:
-  """Evaluate candidate model on proof using its frozen buffer."""
-  model = candidate["model"]
-  buffer = candidate["buffer"]
-  probabilities = predict_cancellation_probability(model, proof)
-  nightly = contract.nightly_table(proof, probabilities)
-  metrics = evaluate_buffer(nightly, buffer)
-  return {
-      "method": candidate["method"],
-      "model": model,
-      "buffer": buffer,
-      "probabilities": probabilities,
-      "nights": nightly,
-      "metrics": metrics,
-  }
+    """Evaluate the frozen winner on proof using its frozen buffer."""
+    return _score_candidate(candidate, proof)
 
 
-def build_comparison_table(period_runs, bookings):
-    """Build the same metrics table for a period's scored runs."""
-    flat_cost = next(
-        run["metrics"]["cost_eur"]
-        for run in period_runs
-        if run["method"] == "Client Flat Rule"
+def score_flat_rule_reference(candidate: dict, proof) -> dict:
+    """Score the frozen client baseline on proof for the required cost comparison."""
+    if candidate["method"] != "Client Flat Rule":
+        raise ValueError("The proof reference must be the Client Flat Rule candidate.")
+    return _score_candidate(candidate, proof)
+
+
+def select_winner(choose_results, choose_table):
+    """Return the highest-AUC candidate that meets the Choose walk ceiling."""
+    required = {"Method", "AUC", "Ceiling met"}
+    missing = required.difference(choose_table.columns)
+    if missing:
+        raise ValueError(f"Choose comparison is missing columns: {sorted(missing)}")
+
+    ceiling_flags = choose_table["Ceiling met"]
+    invalid_flags = [
+        value
+        for value in ceiling_flags
+        if not isinstance(value, (bool, np.bool_))
+    ]
+    if invalid_flags:
+        raise ValueError("Choose comparison 'Ceiling met' must contain only Boolean values.")
+
+    eligible = choose_table.loc[
+        ceiling_flags.map(bool) & choose_table["AUC"].notna()
+    ]
+    if eligible.empty:
+        raise ValueError("No candidate policy meets the walk ceiling on Choose.")
+
+    winner_row = eligible.loc[eligible["AUC"].idxmax()]
+    winner = next(
+        (candidate for candidate in choose_results if candidate["method"] == winner_row["Method"]),
+        None,
     )
+    if winner is None:
+        raise ValueError(
+            f"Selected method {winner_row['Method']!r} has no matching fitted candidate."
+        )
+    return winner, winner_row.to_dict()
+
+
+def build_comparison_table(period_runs, bookings, *, flat_cost=None):
+    """Build the same metrics table for a period's scored runs."""
+    if flat_cost is None:
+        flat_run = next(
+            (run for run in period_runs if run["method"] == "Client Flat Rule"),
+            None,
+        )
+        if flat_run is None:
+            raise ValueError("A flat-rule cost is required to build the comparison table.")
+        flat_cost = flat_run["metrics"]["cost_eur"]
 
     rows = []
     for run in period_runs:

@@ -24,7 +24,7 @@ python src/backtest.py
 python src/nightly.py --from 2017-08-18 --nights 14
 ```
 
-The first prints every method you tried on the proof period and saves the chosen one to `models/`, which you commit. The second writes the table the revenue manager reads each morning. `pytest -q` checks the client's scoring rule at any time.
+The first fits candidates on Train, selects the model and buffer on Choose, freezes and saves the selected policy to `models/`, then evaluates only that policy and the required flat-rule reference on Proof. The corrected follow-up evidence and the earlier historical protocol deviation are recorded in `docs/COMPARISON.md` and `docs/DECISIONS.md`. The second writes the table the revenue manager reads each morning. `pytest -q` checks the client's scoring rule at any time.
 
 ## Who owns each artifact, and who has signed it?
 
