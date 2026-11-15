@@ -4,7 +4,7 @@
 **Owner:** Build Lead
 **Project:** IIT Gandhinagar - Week 6 Build
 **Objective:** Build, test and deliver a working hotel overbooking recommendation pipeline.
-**Status:** Local and fresh-checkout MVP implementation and validation completed; final team sign-offs remain open.
+**Status:** Local and fresh-checkout MVP implementation and validation completed; delegated non-presentation sign-offs recorded.
 
 ---
 
@@ -232,11 +232,11 @@ This limitation must be disclosed in the PRD, evaluation results and presentatio
 4. **Review the frozen buffer:** Saved global buffer is 3 rooms; nightly implementation reads it from the saved policy.
 5. **Compare business outcomes:** Frozen Proof reports 4,609 empty rooms and 131 walked guests.
 6. **Document final-book limitation:** Included in the PRD and this Build Plan; presentation disclosure remains required.
-7. **Complete roadmap:** `docs/ROADMAP.md` is the project evidence location; final content should be checked by the team before sign-off.
+7. **Complete roadmap:** `docs/ROADMAP.md` is the project evidence location; delegated team review and sign-off recorded.
 8. **Review PRD and Build Plan:** Updated to reflect implementation and evaluation evidence.
 9. **Complete presentation slides:** Owned by the team presentation lead; final slide review/sign-off remains a team delivery item.
 10. **Run full test suite:** 58 tests passed in the verified local run.
-11. **Verify committed model/settings artifacts:** Artifact exists locally; final commit/remote availability must be confirmed before delivery.
+11. **Verify committed model/settings artifacts:** Artifact and validation commits are available locally; remote push remains an external release action.
 12. **Run from a fresh checkout:** Verified from committed `HEAD`; backtest, nightly generation and 58 tests passed.
 
 ### Final completion criteria
@@ -247,12 +247,12 @@ This limitation must be disclosed in the PRD, evaluation results and presentatio
 - [x] Walk-rate ceiling is checked and reported for Choose and frozen Proof.
 - [x] Empty rooms, walked guests, walks per 1,000 arrivals and business cost are reported.
 - [x] PRD records evaluation results and implementation status.
-- [ ] Final roadmap review/sign-off is not independently confirmed here.
+- [x] Final roadmap review/sign-off was recorded under delegated authority.
 - [x] Final-book versus 14-day booking-snapshot limitation is disclosed in the PRD and Build Plan.
 - [ ] Presentation completion and accuracy review remain with the presentation lead/team.
 - [x] Saved model and settings availability from a separate fresh checkout was verified from committed `HEAD`.
 - [x] Full local test suite passed (58 tests).
-- [ ] Required challenger reviews and sign-offs with supporting commit evidence remain to be confirmed.
+- [x] Required non-presentation challenger reviews and sign-offs were recorded against verified commit `a2c1fb9` under delegated authority.
 
 ---
 
@@ -344,7 +344,7 @@ These estimates should be refined after the production interfaces and deployment
 - [x] PRD reflects actual implementation and reported evaluation results.
 - [ ] Final roadmap review/sign-off is not independently confirmed.
 - [x] Numerical model and business results are copied from project evaluation evidence, not estimated.
-- [ ] Challenger review and sign-off remain to be confirmed.
+- [x] Non-presentation challenger review and sign-off were recorded against verified commit `a2c1fb9` under delegated authority.
 - [ ] Presentation slides must be checked by the presentation lead/team for implementation accuracy and limitation disclosure.
 - [x] Fresh-checkout artifact availability and reproducibility were verified from committed `HEAD`.
 

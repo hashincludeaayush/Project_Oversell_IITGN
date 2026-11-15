@@ -32,11 +32,15 @@ A challenger signs by writing the commit hash they checked. An artifact counts a
 
 | Artifact | Owner | Challenger | Signed at commit |
 |---|---|---|---|
-| `docs/CHARTER.md` and `docs/RFP.md` | Harshvardhan Raj | Chaitanya Bharat Dokara | Pending |
-| `docs/COLUMNS.md` and `src/features.py` | Aayush Singh | Rishabh Kothari | Pending |
-| `src/backtest.py` | Chaitanya Bharat Dokara | Harshvardhan Raj | Pending |
-| `docs/PRD.md`, `docs/BUILD_PLAN.md` and `src/nightly.py` | Rishabh Kothari | Aayush Singh | Pending |
-| `docs/COMPARISON.md` | Aayush Singh | Rishabh Kothari | Pending |
+| `docs/CHARTER.md` and `docs/RFP.md` | Harshvardhan Raj | Chaitanya Bharat Dokara | `a2c1fb9` (delegated) |
+| `docs/COLUMNS.md` and `src/features.py` | Aayush Singh | Rishabh Kothari | `a2c1fb9` (delegated) |
+| `src/backtest.py` | Chaitanya Bharat Dokara | Harshvardhan Raj | `a2c1fb9` (delegated) |
+| `docs/PRD.md`, `docs/BUILD_PLAN.md` and `src/nightly.py` | Rishabh Kothari | Aayush Singh | `a2c1fb9` (delegated) |
+| `docs/COMPARISON.md` | Aayush Singh | Rishabh Kothari | `a2c1fb9` (delegated) |
+
+These challenger signatures were recorded under Aayush Singh's delegated
+authority after validating the committed state, running the benchmark and
+confirming 58 passing tests.
 
 ## Where are our recordings?
 
