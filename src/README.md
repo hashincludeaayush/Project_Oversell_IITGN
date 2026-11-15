@@ -5,10 +5,10 @@
 | `data.py` | Given | | Download the bookings and read them exactly as exported |
 | `contract.py` | Given, never edited | | The client's scoring rule |
 | `features.py` | Yours | Data Lead | Clean the bookings and return the columns your methods may use, with every choice logged in `docs/DECISIONS.md` |
-| `backtest.py` | Yours | Model Lead | Fit every method on the train period, choose each buffer on the choose period, run the proof once, print the method table, and save the chosen method and its buffer to `models/`, which you commit |
+| `backtest.py` | Yours | Model Lead | Fit methods on Train, select the method and buffer on Choose, freeze and save the selected policy to `models/` before Proof, then evaluate the frozen policy and required flat-rule reference |
 | `nightly.py` | Yours | Build Lead | Read a bookings file and the saved method, and write the oversell table for the nights asked for |
 
-The project ends with these two commands working from a fresh Codespace. Commit `models/` after the final `backtest.py` run, so that `nightly.py` runs from a fresh checkout without retraining, which is how slide 7 runs live:
+Commit `models/selected_policy.joblib` after the Train/Choose selection and freeze step. The nightly command loads this saved policy without retraining. The corrected Proof evaluation has not yet been rerun; see `docs/DECISIONS.md` for the historical protocol note. The nightly CSV defaults to `output/nightly_recommendations.csv`; pass `--output` to choose another path. The dataset is a static final-book export, so this command does not reconstruct a genuine historical T-14 snapshot.
 
 ```bash
 python src/backtest.py

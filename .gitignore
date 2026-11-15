@@ -8,3 +8,5 @@ __pycache__/
 .idea
 .python-version
 pyproject.toml
+# Local Python virtual environment
+.venv/

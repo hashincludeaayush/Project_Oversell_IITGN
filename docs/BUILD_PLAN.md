@@ -186,7 +186,7 @@ The Build Lead must not independently change the calculation or introduce hotel-
 python src/nightly.py --from 2017-08-18 --nights 14
 ```
 
-The exact output filename, model-loading interface and settings format must match the implementation agreed with the Model Lead.
+The default CSV output is `output/nightly_recommendations.csv` (`--output` can override it). The model-loading interface uses `models/selected_policy.joblib` through the persistence helper.
 
 ### Important operational limitation
 
