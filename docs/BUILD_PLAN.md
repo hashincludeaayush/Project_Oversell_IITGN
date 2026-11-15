@@ -4,7 +4,7 @@
 **Owner:** Build Lead
 **Project:** IIT Gandhinagar - Week 6 Build
 **Objective:** Build, test and deliver a working hotel overbooking recommendation pipeline.
-**Status:** Local MVP implementation and validation completed; fresh-checkout verification and final team sign-offs remain open.
+**Status:** Local and fresh-checkout MVP implementation and validation completed; final team sign-offs remain open.
 
 ---
 
@@ -16,17 +16,17 @@
 | POC | Leakage and AUC experiment | Data Lead | 3 | 4 (recorded) | Valid, leaked and random-split AUCs are compared and documented | `src/phase8_leakage_auc.py`, `notebooks/05_leakage_auc_experiment.ipynb`, `docs/PHASE8_FINDINGS.md` |
 | POC | Exploratory data analysis and modeling hypotheses | Data Lead | 6 | 7 (recorded) | Cancellation patterns are explored and leakage-safe modeling hypotheses are documented | `notebooks/04_exploratory_insights.ipynb`, `docs/PHASE8_FINDINGS.md` |
 | POC | Correlation and multicollinearity audit | Data Lead | 2 | Not recorded | Numeric correlation, VIF and categorical association are measured and documented without unapproved feature removal | `notebooks/06_correlation_multicollinearity.ipynb`, `docs/CORRELATION_ANALYSIS.md` |
-| POC | Candidate model and baseline comparison | Model Lead | 6 | Not recorded | Candidate methods are evaluated using agreed business and model-selection metrics | `src/backtest.py`, `docs/COMPARISON.md` |
-| POC | Business-cost and walk-rate validation | Model Lead | 3 | Not recorded | Empty rooms, walked guests, cost and walk rate are calculated using the contract | Backtest output |
+| POC | Candidate model and baseline comparison | Model Lead | 6 | 9 (estimated retrospectively) | Candidate methods are evaluated using agreed business and model-selection metrics | `src/backtest.py`, `docs/COMPARISON.md` |
+| POC | Business-cost and walk-rate validation | Model Lead | 3 | 4 (estimated retrospectively) | Empty rooms, walked guests, cost and walk rate are calculated using the contract | Backtest output |
 | MVP | Nightly recommendation pipeline | Build Lead | 6 | 6 (estimated retrospectively) | Script generates recommendations for requested hotel-arrival nights | `src/nightly.py`, `output/nightly_recommendations.csv` |
 | MVP | Model integration | Build Lead and Model Lead | 3 | 2 (estimated retrospectively) | Nightly pipeline loads selected model and frozen settings | `models/selected_policy.joblib`, persistence and prediction helpers, tests |
 | MVP | Output validation | Build Lead | 1 | 4 (estimated retrospectively) | Output contains required columns and valid recommendations; tests pass | `output/nightly_recommendations.csv`, `tests/test_nightly.py`, test run |
-| Final | Proof-period evaluation review | Model Lead | 2 | Not recorded | Frozen method is evaluated and caveat is documented | `docs/COMPARISON.md`, `docs/DECISIONS.md` |
-| Final | Uncertainty buffer review | Model Lead and Build Lead | 2 | Included in integration estimate; not separately timed | Saved buffer and calculation are verified against implementation | `models/selected_policy.joblib`, `src/nightly.py`, tests |
+| Final | Proof-period evaluation review | Model Lead | 2 | 2 (estimated retrospectively) | Frozen method is evaluated and caveat is documented | `docs/COMPARISON.md`, `docs/DECISIONS.md` |
+| Final | Uncertainty buffer review | Model Lead and Build Lead | 2 | 2 (estimated retrospectively) | Saved buffer and calculation are verified against implementation | `models/selected_policy.joblib`, `src/nightly.py`, tests |
 | Final | Full-night caveat and roadmap | Build Lead and Client Lead | 2 | Included in documentation estimate; not separately timed | Final-book limitation and future improvements are documented | `docs/ROADMAP.md`, PRD |
 | Final | Documentation and presentation | All team members | 3 | Build Lead documentation estimate: 3; presentation effort not recorded | Required documents and slides are complete and reviewed | Project documents and team presentation |
 
-**Hours note:** The three Data Lead values marked “recorded” were already present in the team's plan. Build Lead values are retrospective estimates based on the implementation, debugging, test execution, Git checks and documentation work visible in the project conversation; they are not measured timesheet entries. Other team members' unrecorded hours have deliberately not been invented. “Included” means the work is counted in another estimate and is not added again.
+**Hours note:** The three Data Lead values marked “recorded” were already present in the team's plan. Build Lead values are retrospective estimates based on the implementation, debugging, test execution, Git checks and documentation work visible in the project conversation; they are not measured timesheet entries. The Model Lead values are retrospective estimates supplied for this plan update and are not measured timesheet entries. “Estimated retrospectively” values should not be presented as logged actual hours.
 
 ### Build Lead retrospective effort estimate
 
@@ -40,7 +40,7 @@
 | Git checks, debugging reports and final integration checks | 2 |
 | **Estimated Build Lead effort to date** | **20** |
 
-This is a reasoned estimate from the work evidenced in the conversation, not an exact time record. It excludes other team members' effort and unfinished presentation/fresh-checkout work.
+This is a reasoned estimate from the work evidenced in the conversation, not an exact time record. It excludes other team members' effort and unfinished presentation work.
 
 ---
 
@@ -68,7 +68,7 @@ This is a reasoned estimate from the work evidenced in the conversation, not an 
 - [x] Train, Choose and Proof periods are documented.
 - [x] The walk-rate ceiling is checked in the reported Choose and frozen Proof results.
 - [x] Model-selection decisions and supporting evidence are recorded.
-- [ ] The full correlation/multicollinearity audit and all associated sign-offs have not been independently re-verified as part of this Build Lead close-out.
+- [x] The correlation/multicollinearity audit and Choose-only feature sensitivity check were independently re-verified; challenger sign-offs remain open.
 
 ### Evidence files
 
@@ -128,7 +128,7 @@ The original integration questions have been resolved in the implementation:
 10. **Choose validation:** Selected Random Forest with buffer 3 reports 8.15 walks per 1,000 arrivals, below the ceiling of 10.
 11. **Nightly behaviour:** Loads the saved artifact and does not retrain, refit preprocessing or retune the buffer.
 
-The local integration and tests have been verified. Execution from a separate fresh checkout remains unverified and is still a delivery check.
+The local integration, tests and committed fresh-checkout execution have been verified.
 
 ### 3.3 Nightly recommendation pipeline
 
@@ -189,7 +189,7 @@ Verified result:
 - Output written to `output/nightly_recommendations.csv`.
 - Full test suite: **58 passed**.
 
-The command uses the available final-book dataset. It is a verified local pipeline execution, not a genuine historical T-14 simulation. A separate fresh-checkout execution has not been verified.
+The command uses the available final-book dataset. It is a verified local and fresh-checkout pipeline execution, not a genuine historical T-14 simulation.
 
 #### MVP completion criteria
 
@@ -207,7 +207,7 @@ The command uses the available final-book dataset. It is a verified local pipeli
 - [x] Nightly execution does not retrain or retune the model or buffer.
 - [x] `src/contract.py` was not modified as part of the verified Build Lead changes.
 - [x] Output is generated using the saved policy and current input data.
-- [ ] Execution from a separate fresh checkout has not yet been verified.
+- [x] Execution from a separate fresh checkout has been verified from committed `HEAD`.
 - [ ] Genuine as-of-date/T-14 input reconstruction has not been implemented or validated.
 
 ### Important operational limitation
@@ -237,7 +237,7 @@ This limitation must be disclosed in the PRD, evaluation results and presentatio
 9. **Complete presentation slides:** Owned by the team presentation lead; final slide review/sign-off remains a team delivery item.
 10. **Run full test suite:** 58 tests passed in the verified local run.
 11. **Verify committed model/settings artifacts:** Artifact exists locally; final commit/remote availability must be confirmed before delivery.
-12. **Run from a fresh checkout:** Not yet verified.
+12. **Run from a fresh checkout:** Verified from committed `HEAD`; backtest, nightly generation and 58 tests passed.
 
 ### Final completion criteria
 
@@ -250,7 +250,7 @@ This limitation must be disclosed in the PRD, evaluation results and presentatio
 - [ ] Final roadmap review/sign-off is not independently confirmed here.
 - [x] Final-book versus 14-day booking-snapshot limitation is disclosed in the PRD and Build Plan.
 - [ ] Presentation completion and accuracy review remain with the presentation lead/team.
-- [ ] Saved model and settings availability from a separate fresh checkout remains to be verified.
+- [x] Saved model and settings availability from a separate fresh checkout was verified from committed `HEAD`.
 - [x] Full local test suite passed (58 tests).
 - [ ] Required challenger reviews and sign-offs with supporting commit evidence remain to be confirmed.
 
@@ -286,7 +286,7 @@ These estimates should be refined after the production interfaces and deployment
 | Must have | Nightly recommendation table | MVP requirement |
 | Should have | Uncertainty buffer comparison | Final validation |
 | Should have | Clear limitation documentation | Final delivery |
-| Should have | Reproducible model integration | MVP validation; fresh-checkout check open |
+| Should have | Reproducible model integration | MVP validation; fresh-checkout verification complete |
 | Could have | Dashboard | Future production work |
 | Could have | Live booking integration | Future production work |
 | Could have | Automated alerts | Future production work |
@@ -318,7 +318,7 @@ These estimates should be refined after the production interfaces and deployment
 - [x] Global buffer of 3 rooms is persisted in the selected policy.
 - [x] Selected model with buffer 3 is below the Choose walk-rate ceiling (8.15 per 1,000).
 - [x] Frozen follow-up Proof metrics are reported.
-- [ ] Proof has not been represented as a completely untouched holdout; the earlier exploratory exposure is explicitly disclosed.
+- [x] Proof has not been represented as a completely untouched holdout; the earlier exploratory exposure is explicitly disclosed.
 - [x] No model or buffer retuning is claimed after the corrected frozen follow-up; the earlier exposure caveat remains disclosed.
 
 ### Nightly pipeline
@@ -334,7 +334,7 @@ These estimates should be refined after the production interfaces and deployment
 - [x] Output contains all six required columns.
 - [x] Local output values are valid.
 - [x] Nightly pipeline does not retrain or retune the model.
-- [ ] Fresh-checkout execution is not yet tested.
+- [x] Fresh-checkout execution was tested from committed `HEAD`.
 - [ ] Genuine historical T-14 booking availability is not yet validated.
 
 ### Final documentation and delivery
@@ -346,7 +346,7 @@ These estimates should be refined after the production interfaces and deployment
 - [x] Numerical model and business results are copied from project evaluation evidence, not estimated.
 - [ ] Challenger review and sign-off remain to be confirmed.
 - [ ] Presentation slides must be checked by the presentation lead/team for implementation accuracy and limitation disclosure.
-- [ ] Fresh-checkout artifact availability and reproducibility remain to be verified.
+- [x] Fresh-checkout artifact availability and reproducibility were verified from committed `HEAD`.
 
 ---
 

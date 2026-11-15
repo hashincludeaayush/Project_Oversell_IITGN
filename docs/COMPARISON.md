@@ -6,15 +6,15 @@ Compare your build on `main` with the AI build on the `ai-benchmark` branch, row
 
 | Row | Our build | AI build | Verdict |
 |---|---|---|---|
-| What counts as a cancellation, and which bookings are scored | | | |
-| Unit of decision (night or booking) | | | |
-| Columns used, and the bin each sits in | | | |
-| Split (time or random), and where the buffer was chosen | | | |
-| Baselines run before any model | | | |
-| Walk ceiling respected on the choose period and reported on proof | | | |
-| Euros, rooms and walks per 1,000 on the proof period | | | |
-| Runs end to end with one command | | | |
-| Lines of code a team member can explain | | | |
+| What counts as a cancellation, and which bookings are scored | `is_canceled` is the target; approved booking-time features are documented in `docs/COLUMNS.md`. | No `ai-benchmark` branch or `RESULT.md` is present in this checkout or on `origin`; not verifiable. | AI-side verdict blocked by missing evidence |
+| Unit of decision (night or booking) | Booking probabilities are aggregated by hotel and arrival date in `src/nightly.py`. | Not verifiable from the available AI evidence. | AI-side verdict blocked by missing evidence |
+| Columns used, and the bin each sits in | The approved 22-feature classifier interface is documented in `src/models/classifiers.py` and `docs/COLUMNS.md`. | Not verifiable from the available AI evidence. | AI-side verdict blocked by missing evidence |
+| Split (time or random), and where the buffer was chosen | `src/backtest.py` uses Train/Choose/Proof chronologically and freezes the buffer on Choose. | Not verifiable from the available AI evidence. | AI-side verdict blocked by missing evidence |
+| Baselines run before any model | The required client flat-rule reference is evaluated alongside the selected policy. | Not verifiable from the available AI evidence. | AI-side verdict blocked by missing evidence |
+| Walk ceiling respected on the choose period and reported on proof | Choose: 8.15 walks per 1,000; frozen Proof: 5.252; both are below 10. | Not verifiable from the available AI evidence. | AI-side verdict blocked by missing evidence |
+| Euros, rooms and walks per 1,000 on the proof period | EUR 2,251,729.23; 4,609 empty rooms; 131 walked guests; 5.252 walks per 1,000. | Not verifiable from the available AI evidence. | AI-side verdict blocked by missing evidence |
+| Runs end to end with one command | `python src/backtest.py` and `python src/nightly.py --from 2017-08-18 --nights 14` pass from committed `HEAD`. | Not verifiable from the available AI evidence. | AI-side verdict blocked by missing evidence |
+| Lines of code a team member can explain | The persisted policy, feature interface and nightly loader are documented in `docs/BUILD_PLAN.md`. | Not verifiable from the available AI evidence. | AI-side verdict blocked by missing evidence |
 
 ## Corrected Train-Choose-Freeze-Proof evidence (2026-11-16)
 
@@ -48,14 +48,20 @@ _Up to three, each naming a file and line in our build, or an excerpt from a log
 
 <!-- answer:4 -->
 
+No gaps can be attributed specifically to the AI build because the expected `ai-benchmark` branch and its `RESULT.md` are absent from this checkout and from `origin`. The current build's known limitations are documented in `docs/BUILD_PLAN.md`: the Proof exposure caveat and the lack of genuine historical T-14 booking snapshots.
+
 ## Which mistakes did the AI build make that ours did not?
 
 _Up to three, each naming a file and line on the `ai-benchmark` branch. If you found none, say so and name the file that shows it._
 
 <!-- answer:4 -->
 
+No AI-build mistakes can be established without the AI branch or its recorded output. Do not convert the missing benchmark evidence into a claim about the AI implementation.
+
 ## What would we take from the AI build, and what would we never ship?
 
 _Two sentences, each pointing to a file and line._
 
 <!-- answer:2 -->
+
+Subject to obtaining the missing benchmark evidence, the project should retain reproducible saved-policy loading and the one-command validation workflow documented in `README.md`. It must never ship target leakage, post-booking outcome fields, or buffer tuning on Proof; those controls are enforced and documented in `src/features.py`, `src/backtest.py` and `docs/DECISIONS.md`.

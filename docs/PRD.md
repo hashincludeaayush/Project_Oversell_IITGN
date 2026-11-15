@@ -106,7 +106,7 @@ The following local execution was verified:
 & .\.venv\Scripts\python.exe src\nightly.py --from 2017-08-18 --nights 14
 ```
 
-It wrote 28 rows covering 14 arrival nights and two hotels to `output/nightly_recommendations.csv`. The full test suite reported 58 passing tests. This verifies the local pipeline against the available final-book dataset; it does not establish genuine historical T-14 data availability. A separate fresh-checkout execution has not yet been verified.
+It wrote 28 rows covering 14 arrival nights and two hotels to `output/nightly_recommendations.csv`. The full test suite reported 58 passing tests. The same backtest, nightly command and test suite also passed from a fresh checkout of committed `HEAD`. This does not establish genuine historical T-14 data availability.
 
 ## Q5. What data and model features will the system use?
 
@@ -247,7 +247,7 @@ The nightly script must not:
 - Use actual cancellation outcomes to generate predictions.
 - Use post-booking outcome fields as predictors.
 
-The nightly pipeline loads the saved model and settings. It does not need to train the model before local execution. A fresh-checkout run remains to be verified.
+The nightly pipeline loads the saved model and settings. It does not need to train the model before local execution. Fresh-checkout execution has been verified from committed `HEAD`.
 
 ### Evaluation periods
 
@@ -397,7 +397,7 @@ These additions are not claims about current MVP functionality.
 7. The walk-rate guardrail must be checked carefully before operational use.
 8. The selected model's Choose-period AUC does not guarantee lower Proof-period business cost or compliance with the walk-rate ceiling.
 9. The saved model and settings must be available and compatible with the runtime environment for the nightly script to work.
-10. The local pipeline has been tested in the current project environment, but execution from a separate fresh checkout has not yet been verified.
+10. The local pipeline and a separate fresh checkout of committed `HEAD` have been tested successfully.
 
 ### 14-day decision-time data availability
 
