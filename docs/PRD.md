@@ -211,7 +211,7 @@ Responsibilities:
 - Save the selected model, including its preprocessing pipeline, and required frozen settings under `models/`.
 - Ensure the saved artifacts can be loaded from a fresh checkout without retraining.
 
-The currently confirmed selection is the Random Forest described in Q2, with a global buffer of 3 rooms. The saved artifact filename, serialization format, loading interface and exact probability-prediction interface must be confirmed from the Model Lead's committed implementation before integration.
+The currently confirmed selection is the Random Forest described in Q2, with a global buffer of 3 rooms. The committed artifact is `models/selected_policy.joblib`, serialized with `joblib`; `models.persistence.load_selected_policy()` validates it, and `models.helpers.predict_cancellation_probability()` provides the class-1 cancellation probabilities used by the nightly pipeline.
 
 The Proof period must not be used to select the model, tune parameters or change the buffer.
 

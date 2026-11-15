@@ -98,16 +98,21 @@ Before implementing `src/nightly.py`, the Model Lead and Build Lead must confirm
 
 1. **Selected model:** Random Forest with 100 estimators, maximum depth 12 and minimum samples per leaf 20.
 2. **Selected features:** The 22-feature `FEATURE_COLUMNS` interface, with `arrival_date_year` intentionally excluded.
-3. **Saved artifact:** Exact model filename, directory and serialization format under `models/`.
-4. **Preprocessing:** The saved artifact must include the fitted preprocessing pipeline used during training.
-5. **Loading interface:** Exact method for loading the saved model from `src/nightly.py`.
-6. **Prediction interface:** Exact prediction method and confirmation that probability class 1 represents `is_canceled = 1`.
-7. **Frozen settings:** One global buffer of 3 rooms, saved in the agreed settings format.
-8. **Buffer calculation:** Integer rounding and non-negative handling must match the Model Lead's committed implementation in `src/models/buffer.py`.
-9. **Choose-period validation:** Confirm that the selected Random Forest with buffer 3 satisfies the walk-rate ceiling on Choose.
-10. **Reproducibility:** A fresh checkout must be able to run the nightly script without retraining or retuning the model.
+3. **Saved artifact:** `models/selected_policy.joblib`, serialized with `joblib`.
+4. **Preprocessing:** The saved artifact includes the fitted preprocessing pipeline used during training.
+5. **Loading interface:** `models.persistence.load_selected_policy()` loads and validates the saved policy.
+6. **Prediction interface:** `models.helpers.predict_cancellation_probability()` returns the probability for class 1, representing `is_canceled = 1`.
+7. **Frozen settings:** One global buffer of 3 rooms is stored in the selected-policy artifact.
+8. **Buffer calculation:** Integer rounding and non-negative handling match the committed implementation in `src/models/buffer.py`.
+9. **Choose-period validation:** The selected Random Forest with buffer 3 satisfies the walk-rate ceiling on Choose.
+10. **Reproducibility:** A fresh checkout can run the nightly script without retraining or retuning the model.
 
-The Build Lead must not invent an artifact filename or independently recreate the Model Lead's preprocessing, feature interface or buffer logic.
+The Build Lead must use this artifact and interface rather than inventing a filename or independently recreating the Model Lead's preprocessing, feature interface or buffer logic.
+
+The frozen global buffer of 3 is the MVP uncertainty treatment. It was selected on
+Choose under the walk ceiling and is applied unchanged during Proof and nightly
+inference. The MVP does not add a second uncertainty adjustment or tune a
+hotel-specific buffer; that extension belongs in the roadmap.
 
 ### 3.3 Nightly recommendation pipeline
 
@@ -289,14 +294,14 @@ These estimates are preliminary planning estimates, not completed work or commit
 
 ### Model and evaluation
 
-- [ ] Train, Choose and Proof periods are separated.
-- [ ] The client baseline is included.
-- [ ] The selected Random Forest parameters are documented.
-- [ ] The Choose-period selection evidence is recorded.
-- [ ] The global buffer of 3 rooms is saved.
-- [ ] The selected model with buffer 3 is checked against the Choose-period walk-rate ceiling.
-- [ ] The frozen Proof evaluation reports business-cost metrics.
-- [ ] No tuning is performed using Proof results.
+- [x] Train, Choose and Proof periods are separated.
+- [x] The client baseline is included.
+- [x] The selected Random Forest parameters are documented.
+- [x] The Choose-period selection evidence is recorded.
+- [x] The global buffer of 3 rooms is saved.
+- [x] The selected model with buffer 3 is checked against the Choose-period walk-rate ceiling.
+- [x] The frozen Proof evaluation reports business-cost metrics.
+- [x] No tuning is performed using Proof results.
 
 ### Nightly pipeline
 
