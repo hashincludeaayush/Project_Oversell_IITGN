@@ -1,8 +1,8 @@
 ﻿# Build Plan
-## Project Oversell â€“ Hotel Overbooking Recommendation System
+## Project Oversell - Hotel Overbooking Recommendation System
 
 **Owner:** Build Lead
-**Project:** IIT Gandhinagar â€“ Week 6 Build
+**Project:** IIT Gandhinagar - Week 6 Build
 **Objective:** Build, test and deliver a working hotel overbooking recommendation pipeline.
 
 ---
@@ -11,7 +11,6 @@
 
 | Phase | Deliverable | Owner | Planned hours | Actual hours | Done when | Evidence |
 |---|---|---|---:|---:|---|---|
-
 | POC | Data preparation and feature pipeline | Data Lead | 4 | 3 | Approved booking-time features are prepared correctly | `src/features.py`, `docs/COLUMNS.md` |
 | POC | Leakage and AUC experiment | Data Lead | 3 | 4 | Valid, leaked and random-split AUCs are compared and documented | `src/phase8_leakage_auc.py`, `notebooks/05_leakage_auc_experiment.ipynb`, `docs/PHASE8_FINDINGS.md` |
 | POC | Exploratory data analysis and modeling hypotheses | Data Lead | 6 | 7 | Cancellation patterns are explored and testable, leakage-safe modeling hypotheses are documented | `notebooks/04_exploratory_insights.ipynb`, `docs/PHASE8_FINDINGS.md` |
@@ -29,7 +28,7 @@
 
 ---
 
-## 2. POC â€“ Proof of Concept
+## 2. POC - Proof of Concept
 
 **Objective:** Establish whether the available booking data can support a reliable overbooking recommendation.
 
@@ -66,7 +65,7 @@
 
 ---
 
-## 3. MVP â€“ Minimum Viable Product
+## 3. MVP - Minimum Viable Product
 
 **Objective:** Generate a usable 14-night overbooking recommendation table for the two hotels.
 
@@ -198,7 +197,7 @@ This limitation must be disclosed in the PRD, evaluation results and presentatio
 
 ---
 
-## 4. Final â€“ Validation and delivery
+## 4. Final - Validation and delivery
 
 **Objective:** Confirm that the MVP meets the project requirements and clearly communicate its limitations.
 
