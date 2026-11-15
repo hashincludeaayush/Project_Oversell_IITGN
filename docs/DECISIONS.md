@@ -17,6 +17,7 @@ Two tables. The first is the Week 1 decisions log for the data: every cleaning o
 | 2026-11-11 | Represent missing `agent` and `company` as explicit no-partner categories | 16,340 rows have no agent and 112,593 have no company; `docs/DOMAIN.md` defines empty values as booked without one. The raw export remains unchanged. | 128,933 prepared cells | Aayush Singh |
 | 2026-11-11 | Do not remove exact duplicates | The raw file contains 31,994 exact duplicate rows (40,165 rows in duplicate groups). `src/data.py` requires the export to remain exact, and the scoring unit is each booking row; deduplication would change the client's data. | 31,994 duplicate rows inspected; 0 removed | Aayush Singh |
 | 2026-11-11 | Retain zero-night and anomalous ADR rows in the raw/scoring view | There are 715 zero-night rows, 1,959 zero-ADR rows, and 1 negative-ADR row. No row is removed before the contract evaluation; these values are flagged for later model review, while `adr` is not an MVP predictor in the Phase 5 audit. | 2,675 rows inspected; 0 removed | Aayush Singh |
+| 2026-11-15 | Use the chronological Bin 1 AUC as the only primary Phase 8 evidence | The same logistic-regression pipeline produced AUC 0.8184 with approved booking-time features and a chronological split, versus 1.0000 with all non-target raw columns and 0.8795 with a random split. The leaked and random results are diagnostic only. | 119,390 bookings evaluated in three controlled runs; no rows changed | Aayush Singh |
 
 ## Which team decisions and objections did we log?
 
