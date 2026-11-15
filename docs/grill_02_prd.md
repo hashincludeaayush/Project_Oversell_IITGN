@@ -3,7 +3,7 @@
 **Owner:** Build Lead.
 **When:** Saturday, 14 November 2026.
 **Tool used:** ChatGPT.
-**Full chat:** [Insert the shared ChatGPT conversation link here.]
+**Full chat:** [ChatGPT share link](https://chatgpt.com/share/6af8a341-d4ac-83e8-8986-5dea278ff012)
 
 Write your own answer before you read the AI's recommended answer. When you accept a recommendation, say why in the last column. At least three rows must show a change to a document.
 
