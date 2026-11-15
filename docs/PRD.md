@@ -1,10 +1,10 @@
 ﻿# Product Requirements Document (PRD)
 ## Hotel Overbooking Recommendation System
 
-**Project:** Project Oversell â€“ IIT Gandhinagar
+**Project:** Project Oversell – IIT Gandhinagar
 **Role:** Build Lead
 **Hotels:** City Hotel (Lisbon) and Resort Hotel (Algarve)
-**Status:** MVP implementation and corrected follow-up evaluation reported (2026-11-16); see the historical Proof-exposure caveat in `docs/DECISIONS.md`.
+**Status:** MVP implementation and corrected follow-up evaluation reported (2026-11-16). See `docs/DECISIONS.md` and `docs/COMPARISON.md` for the Proof-exposure caveat.
 
 ---
 
@@ -12,10 +12,10 @@
 
 The primary user is the Director of Revenue / Revenue Manager responsible for two hotels in Portugal:
 
-- City Hotel â€“ Lisbon
-- Resort Hotel â€“ Algarve
+- City Hotel – Lisbon
+- Resort Hotel – Algarve
 
-Every morning, the user needs to decide how many bookings beyond the physical room capacity can safely be accepted for each hotel and each of the next 14 arrival nights.
+Every morning, the user needs to decide how many bookings beyond physical room capacity can safely be accepted for each hotel and each of the next 14 arrival nights.
 
 The system supports this decision by estimating the number of cancellations expected for each hotel-arrival night and recommending an appropriate oversell quantity.
 
@@ -23,17 +23,17 @@ The final decision remains with the Revenue Manager. The MVP provides recommenda
 
 ## Q2. What approaches will we compare?
 
-The project compares the following approaches:
+The project compares:
 
 1. **Client baseline:** A flat-rule approach using each hotel's historical training-period cancellation rate and a fixed safety margin.
 2. **Lookup-based approach:** A rule-based approach using historical cancellation behaviour for relevant booking groups.
-3. **Machine-learning approach:** A predictive model that estimates the cancellation probability of each booking using information available at booking time.
+3. **Machine-learning approach:** A predictive model that estimates each booking's cancellation probability using information available at booking time.
 
-Candidate methods are fitted using the training period. Method and safety-setting selection must use the Choose period. The selected, frozen approach is then evaluated on the Proof period.
+Candidate methods are fitted using Train. Method and safety-setting selection use Choose. The selected, frozen approach is then evaluated on Proof.
 
-### Current model selection
+### Selected model and settings
 
-The Model Lead has confirmed the following selected machine-learning model:
+The Model Lead selected:
 
 - **Model:** Random Forest
 - **Number of estimators:** 100
@@ -41,15 +41,19 @@ The Model Lead has confirmed the following selected machine-learning model:
 - **Minimum samples per leaf:** 20
 - **Choose-period AUC:** 0.821727
 - **Choose-period MAE:** 7.432268
-- **Choose-period walks per 1,000:** 8.15 (within the maximum of 10)
+- **Choose-period walks per 1,000 arrivals:** 8.15 (below the maximum of 10)
 - **Choose-period cost:** EUR 1,384,174.34
 - **Choose-period savings versus Flat Rule:** EUR 1,003,755.30
 - **Logistic Regression Choose-period AUC:** 0.8168
 - **Frozen global buffer:** 3 rooms
 
-The Model Lead has also confirmed that `arrival_date_year` is intentionally excluded from the selected classifier. The training period contains 2015 and 2016, while the Proof period and intended later use contain 2017 onward. Excluding the year prevents the tree-based model from relying on year-specific splits that may not generalise to later years. Seasonality is represented through `arrival_date_month` and `arrival_date_week_number`.
+The Random Forest was selected by highest Choose AUC among candidates meeting the Choose walk-rate ceiling. AUC is a discrimination metric; it does not by itself establish that a policy satisfies the business-cost and walk-rate requirements. Those requirements are evaluated separately using the supplied evaluation contract.
 
-The fitted Random Forest pipeline and frozen buffer were persisted in `models/selected_policy.joblib` before Proof scoring. The selected model was fitted on Train; model and buffer selection used Choose only.
+`arrival_date_year` is intentionally excluded from the selected classifier. The training period contains 2015 and 2016, while Proof and intended later use contain 2017 onward. Excluding year reduces the risk of year-specific tree splits that may not generalise. Seasonality is represented through arrival month and week number.
+
+The fitted Random Forest pipeline and frozen buffer are persisted in `models/selected_policy.joblib` using joblib. The nightly pipeline loads the artifact through `models.persistence.load_selected_policy()` and obtains booking-level cancellation probabilities through `models.helpers.predict_cancellation_probability()`.
+
+The model was fitted on Train and model/buffer selection used Choose. However, Proof results had been examined in an earlier exploratory run that scored all candidates before the corrected follow-up. Therefore, the corrected follow-up is a frozen evaluation, but Proof cannot be described as a completely untouched holdout. This caveat must accompany the reported results.
 
 The selected approach must:
 
@@ -57,9 +61,7 @@ The selected approach must:
 - Reduce business cost compared with the client baseline where the Proof results support that conclusion.
 - Avoid using information unavailable at booking time.
 - Produce consistent hotel-by-night recommendations.
-- Use the same saved preprocessing and feature interface during nightly inference as during model training.
-
-AUC is used as a model discrimination metric. It does not by itself establish that an overselling policy satisfies the business-cost and walk-rate requirements. Those requirements must be evaluated separately using the supplied Evaluation Contract.
+- Use the saved preprocessing and feature interface during nightly inference.
 
 ## Q3. What client wish-list requirement must be addressed?
 
@@ -71,19 +73,15 @@ AUC is used as a model discrimination metric. It does not by itself establish th
 
 The MVP explores differences in cancellation behaviour across available booking characteristics, particularly market segment and customer type. Descriptive analysis of these groups can help the hotel understand which types of bookings have different cancellation patterns.
 
-The initial analysis has examined cancellation rates by market segment and customer type. However, the current MVP does not claim to have discovered statistically validated hidden guest clusters.
+The initial analysis examined cancellation rates by market segment and customer type. The current MVP does not claim to have discovered statistically validated hidden guest clusters.
 
-The primary objective remains reliable cancellation prediction and cost-effective nightly overbooking. More advanced guest segmentation, including clustering, may be considered as a future extension if it identifies meaningful, interpretable and actionable groups that can support marketing decisions.
+The primary objective remains reliable cancellation prediction and cost-effective nightly overbooking. More advanced guest segmentation, including clustering, may be considered as a future extension if it identifies meaningful, interpretable and actionable groups.
 
-Any future segmentation must be validated using historical data and must not introduce target leakage or compromise the overbooking system's walk-rate guardrail.
+Any future segmentation must be validated using historical data and must not introduce target leakage or compromise the walk-rate guardrail.
 
 ## Q4. What will the MVP deliver?
 
-The MVP will generate a recommendation table for the next 14 arrival nights for both hotels.
-
-Each row represents one hotel and one arrival night.
-
-The required output columns are:
+The MVP generates a recommendation table for a requested period of up to 14 arrival nights for both hotels. Each row represents one hotel and one arrival night.
 
 | Column | Description |
 |---|---|
@@ -94,11 +92,21 @@ The required output columns are:
 | `buffer` | Frozen safety margin applied to account for uncertainty |
 | `recommended_oversell` | Recommended number of bookings beyond physical room capacity |
 
-The MVP uses a single global buffer of 3 rooms for both hotels, subject to verification against the Model Lead's saved settings and final implementation.
-
-The output helps the Revenue Manager understand the expected cancellation volume and the recommended overselling decision.
+The saved policy contains a global buffer of 3 rooms. The nightly pipeline reads this value from the saved policy rather than independently tuning it.
 
 The output is a recommendation, not an automatic booking instruction. The Revenue Manager retains responsibility for the final decision.
+
+### Verified implementation status
+
+The local nightly pipeline has been implemented. It loads the saved policy, prepares prediction rows without requiring the actual cancellation target, generates and validates booking-level probabilities, aggregates results by hotel and arrival date, and writes the six required columns.
+
+The following local execution was verified:
+
+```powershell
+& .\.venv\Scripts\python.exe src\nightly.py --from 2017-08-18 --nights 14
+```
+
+It wrote 28 rows covering 14 arrival nights and two hotels to `output/nightly_recommendations.csv`. The full test suite reported 58 passing tests. This verifies the local pipeline against the available final-book dataset; it does not establish genuine historical T-14 data availability. A separate fresh-checkout execution has not yet been verified.
 
 ## Q5. What data and model features will the system use?
 
@@ -106,7 +114,7 @@ The original dataset contains 119,390 booking records and 32 columns.
 
 ### Data Lead's approved feature interface
 
-The Data Lead has approved 23 booking-time predictors through `features.MODEL_FEATURES` in `src/features.py`:
+The Data Lead approved 23 booking-time predictors through `features.MODEL_FEATURES` in `src/features.py`:
 
 1. `hotel`
 2. `lead_time`
@@ -132,27 +140,25 @@ The Data Lead has approved 23 booking-time predictors through `features.MODEL_FE
 22. `company`
 23. `customer_type`
 
-This is the approved Data Lead feature interface. It does not mean that every candidate model must use all 23 columns.
+This is the approved Data Lead feature interface. It does not mean every candidate model must use all 23 columns.
 
 ### Selected Random Forest feature interface
 
 The selected Random Forest uses the 22-feature subset defined by the Model Lead in `src/models/classifiers.py` through `FEATURE_COLUMNS`.
 
-`arrival_date_year` is intentionally excluded from this classifier. This is a documented modelling decision because the training data contains 2015 and 2016, while the Proof period and intended later use contain 2017 onward. The model retains month and week number to represent seasonality.
-
-The feature list, order, types and preprocessing used by the saved model must remain consistent during nightly inference. The saved model pipeline is the authoritative prediction interface once committed.
+`arrival_date_year` is intentionally excluded from this classifier. The selected saved model and its persisted feature/preprocessing configuration are authoritative for inference. The nightly pipeline uses the same model feature helper as the model implementation rather than independently rebuilding preprocessing.
 
 ### Prediction target
 
 `is_canceled`
 
-This is the outcome the model must predict. It must never be included as a predictor.
+This is the outcome the model predicts and must never be included as a predictor.
 
-The selected classifier's positive probability class must represent `is_canceled = 1` (cancelled booking). This class mapping must be verified during model-artifact integration.
+For the binary `is_canceled` target, probability column 1 represents the positive class (`is_canceled = 1`, cancelled booking). The prediction helper uses the saved model's `predict_proba(... )[:, 1]` path for the selected scikit-learn pipeline.
 
 ### Scoring columns
 
-The following columns are required by the historical business-scoring contract but are not all model predictors:
+The historical business-scoring contract uses:
 
 - `hotel`
 - `arrival_date`
@@ -162,7 +168,7 @@ The following columns are required by the historical business-scoring contract b
 
 `adr` and `nights` are used to calculate stay value for historical business-cost evaluation. `is_canceled` is the actual outcome used for evaluation.
 
-During future inference, the actual cancellation outcome is unknown and must not be required by `src/nightly.py`.
+During future inference, the actual cancellation outcome is unknown and is not required by `src/nightly.py`.
 
 ### Leakage prevention
 
@@ -173,7 +179,7 @@ The model must not use information that becomes available only after the booking
 
 Other columns classified outside the first bin in `docs/COLUMNS.md` must not be introduced as model predictors without explicit review and approval.
 
-The nightly prediction pipeline must use the selected model's saved feature interface and must not silently add or substitute columns.
+The nightly prediction pipeline must use the saved model's feature interface and must not silently add or substitute columns.
 
 ## Q6. How will the system work?
 
@@ -187,14 +193,14 @@ The MVP follows three main stages.
 Responsibilities:
 
 - Prepare the raw booking dataset.
-- Handle the approved missing-value cases.
+- Handle approved missing-value cases.
 - Derive arrival dates and total nights.
 - Separate model predictors from scoring columns.
-- Support preparation of prediction rows without requiring the actual cancellation target.
+- Support prediction rows without requiring the actual cancellation target.
 - Prevent target leakage.
-- Preserve booking-row order so that each prediction remains associated with its original booking.
+- Preserve booking-row order so each prediction remains associated with its original booking.
 
-The Build Lead must use the agreed feature-preparation interface rather than independently recreating the Data Lead's transformations.
+The Build Lead uses the agreed feature-preparation interface rather than independently recreating the Data Lead's transformations.
 
 ### Stage 2: Model training and backtesting
 
@@ -203,17 +209,15 @@ The Build Lead must use the agreed feature-preparation interface rather than ind
 
 Responsibilities:
 
-- Fit candidate methods using the training period.
-- Select the method and safety settings using the Choose period.
+- Fit candidate methods using Train.
+- Select the method and safety settings using Choose.
 - Compare candidate methods against the client baseline.
 - Check the walk-rate guardrail and business-cost metrics.
-- Evaluate the frozen approach on the Proof period only after selection.
-- Save the selected model, including its preprocessing pipeline, and required frozen settings under `models/`.
-- Ensure the saved artifacts can be loaded from a fresh checkout without retraining.
+- Evaluate the frozen approach on Proof after selection.
+- Save the selected model, preprocessing pipeline and frozen settings under `models/`.
+- Support loading the saved artifact without retraining during nightly execution.
 
-The currently confirmed selection is the Random Forest described in Q2, with a global buffer of 3 rooms. The saved artifact filename, serialization format, loading interface and exact probability-prediction interface must be confirmed from the Model Lead's committed implementation before integration.
-
-The Proof period must not be used to select the model, tune parameters or change the buffer.
+The selected policy is the Random Forest described in Q2, with a global buffer of 3 rooms. The artifact is `models/selected_policy.joblib`, serialized using joblib. The nightly pipeline loads it through `models.persistence.load_selected_policy()`.
 
 ### Stage 3: Nightly recommendation generation
 
@@ -223,15 +227,16 @@ The Proof period must not be used to select the model, tune parameters or change
 Responsibilities:
 
 - Read the booking input data.
-- Prepare prediction rows using the Data Lead's approved feature-preparation interface.
-- Load the selected saved model and frozen settings.
-- Use the saved preprocessing pipeline and the selected model's exact feature interface.
-- Estimate one cancellation probability per booking.
-- Validate that predictions are finite values between 0 and 1.
+- Prepare prediction rows using `features.prepare_bookings(raw, require_target=False)`.
+- Load the selected saved policy and frozen settings.
+- Use the saved preprocessing pipeline and selected model's feature interface.
+- Estimate one cancellation probability per booking through `models.helpers.predict_cancellation_probability()`.
+- Validate that there is one probability per booking and that every probability is finite and between 0 and 1.
 - Preserve booking-row order when associating predictions with bookings.
 - Aggregate booking counts and predicted cancellation probabilities by hotel and arrival date.
-- Apply the frozen global buffer of 3 rooms using the agreed and verified calculation.
-- Generate the required 14-night recommendation table.
+- Apply the saved global buffer of 3 rooms.
+- Generate the requested hotel-by-night recommendation table.
+- Validate requested hotel/date coverage and output values.
 
 The nightly script must not:
 
@@ -242,7 +247,7 @@ The nightly script must not:
 - Use actual cancellation outcomes to generate predictions.
 - Use post-booking outcome fields as predictors.
 
-The nightly script must load the committed model and settings. A fresh checkout must be able to run the nightly command without first training a model.
+The nightly pipeline loads the saved model and settings. It does not need to train the model before local execution. A fresh-checkout run remains to be verified.
 
 ### Evaluation periods
 
@@ -250,9 +255,9 @@ The nightly script must load the committed model and settings. A fresh checkout 
 |---|---|---|
 | Train | Before 2016-07-01 | Fit candidate models and estimate historical patterns |
 | Choose | 2016-07-01 to 2016-12-31 | Select the method and freeze safety settings |
-| Proof | 2017-01-01 to 2017-08-31 | Final evaluation of the frozen method on the available dataset |
+| Proof | 2017-01-01 to 2017-08-31 | Evaluate the frozen method on the available dataset |
 
-The Proof period must not be used to tune models, select methods or change safety buffers.
+The Proof period must not be used to tune models, select methods or change safety buffers. Because Proof results were examined during an earlier exploratory run, the corrected follow-up is not a completely untouched holdout; see `docs/DECISIONS.md` and `docs/COMPARISON.md`.
 
 ### Business-cost calculation
 
@@ -268,7 +273,7 @@ The cost is:
 
 `Cost = (Empty rooms * V) + (Walked guests * 300)`
 
-The walk cost is â‚¬300 per walked guest.
+The walk cost is EUR 300 per walked guest.
 
 The walk rate is:
 
@@ -276,29 +281,25 @@ The walk rate is:
 
 For this contract, Total arrivals means the number of scored bookings that did not cancel, as defined in `src/contract.py`.
 
-The hard guardrail is a maximum of 10 walked guests per 1,000 arrivals.
+The hard guardrail is a maximum of 10 walked guests per 1,000 arrivals. Any policy exceeding this limit must be rejected, even if its total cost is lower.
 
-Any policy exceeding this limit must be rejected, even if its total cost is lower.
-
-The historical scoring implementation must follow the supplied `src/contract.py`. That contract is immutable and must not be modified by the Build Lead.
+The historical scoring implementation follows the supplied `src/contract.py`. That contract is immutable and must not be modified by the Build Lead.
 
 ### Frozen buffer and oversell calculation
 
-The Model Lead has confirmed a single global buffer of 3 rooms.
+The saved policy contains a single global buffer of 3 rooms.
 
-The intended conceptual relationship is:
+The implemented nightly calculation is:
 
-`Recommended oversell = Expected cancellations - Safety buffer`
+`recommended_oversell = max(0, round(expected_cancellations - buffer))`
 
-The exact conversion from expected cancellations to an integer oversell quantity, including rounding and non-negative handling, must match the Model Lead's implemented and saved buffer methodology. The Build Lead must verify this against the committed `src/models/buffer.py` and saved settings before implementing it in `src/nightly.py`.
-
-The buffer must remain frozen during nightly execution. It must not be separately tuned for each hotel unless the team formally changes and documents the agreed methodology before Proof evaluation.
+The calculation uses the Python/NumPy rounding behaviour in the implementation. The nightly pipeline obtains the buffer from the saved policy; it does not independently tune or override it. Recommendations must still be evaluated against the project's walk-rate ceiling.
 
 ## Q7. How will we measure success?
 
 The project evaluates the selected approach against the client baseline using the supplied business contract.
 
-The corrected follow-up evaluated only the frozen Random Forest policy and the required client flat-rule reference on Proof. Its reported results are:
+The corrected follow-up evaluated the frozen Random Forest policy and the required client flat-rule reference on Proof. Reported frozen Proof results are:
 
 | Metric | Frozen Random Forest, buffer 3 |
 |---|---:|
@@ -311,21 +312,19 @@ The corrected follow-up evaluated only the frozen Random Forest policy and the r
 | Savings versus Flat Rule | EUR 1,631,200.31 |
 | Walk-rate guardrail | Satisfied (maximum 10) |
 
-The reported savings compare the selected policy with the required flat-rule reference. The historic `output.txt` is retained unchanged and separately records the earlier run that scored every candidate on Proof before selection. Since those Proof results had already been examined, the corrected follow-up is not a completely untouched holdout; see `docs/DECISIONS.md` and `docs/COMPARISON.md`.
+The reported savings compare the selected policy with the required flat-rule reference. The historic `output.txt` is retained unchanged and records the earlier run that scored every candidate on Proof before selection. Since those Proof results had already been examined, the corrected follow-up is not a completely untouched holdout. This limitation must be disclosed wherever Proof results are presented.
 
 Success criteria:
 
-1. The selected approach must respect the walk-rate guardrail.
-2. Its business cost should be lower than the client baseline if the Proof results support that conclusion.
-3. It must generate a valid recommendation for each required hotel and arrival night.
-4. It must use only the selected model's approved booking-time feature interface.
-5. The evaluation must follow the Train, Choose and Proof separation.
-6. The saved model and frozen settings must be reproducible from a fresh checkout without retraining during nightly execution.
-7. The output must satisfy the required column, data-type and probability-validation expectations.
+1. The selected approach respects the walk-rate guardrail.
+2. Its business cost is lower than the client baseline in the reported frozen evaluation.
+3. It generates a valid recommendation for each requested hotel and arrival night.
+4. It uses only the selected model's approved booking-time feature interface.
+5. The evaluation follows the documented Train, Choose and Proof process, with the Proof-exposure caveat disclosed.
+6. The saved model and frozen settings can be reproduced from a fresh checkout without retraining during nightly execution.
+7. The output satisfies the required column, data-type and probability-validation expectations.
 
 The Choose-period AUC of 0.821727 is the model-selection result: the Random Forest was selected by highest Choose AUC among candidates meeting the Choose walk ceiling. It is separate from the Proof business outcomes reported above.
-
-All Proof-period numerical results must be copied from the actual frozen backtest output. No results should be estimated or fabricated.
 
 ## Q8. What is the system architecture?
 
@@ -351,24 +350,23 @@ Historical evaluation is a separate process that compares predictions with actua
 flowchart TD
     A[Raw Bookings] --> B[src/features.py]
     B --> C[Prepared Booking Rows]
-    C --> D[Model Feature Interface]
+    C --> D[Saved Model Feature Interface]
     C --> E[Scoring and Aggregation Fields]
-    D --> F[src/backtest.py]
-    F --> G[Train Period]
-    G --> H[Choose Period]
-    H --> I[Selected Random Forest and Frozen Buffer]
-    I --> J[Saved Model Pipeline and Settings in models/]
-    J --> K[src/nightly.py]
-    E --> K
-    K --> L[Booking-Level Cancellation Probabilities]
-    L --> M[Nightly Aggregation]
-    M --> N[Expected Cancellations and Oversell]
-    N --> O[14-Night Recommendation Table]
+    D --> F[Saved Random Forest Pipeline]
+    F --> G[models/selected_policy.joblib]
+    G --> H[models.persistence.load_selected_policy()]
+    H --> I[src/nightly.py]
+    E --> I
+    I --> J[models.helpers.predict_cancellation_probability()]
+    J --> K[Booking-Level Cancellation Probabilities]
+    K --> L[Nightly Aggregation]
+    L --> M[Expected Cancellations and Oversell]
+    M --> N[14-Night Recommendation CSV]
 
-    C --> P[Historical Evaluation]
-    L --> P
-    P --> Q[Actual Outcomes and Business Contract]
-    Q --> R[Proof-Period Results]
+    C --> O[Historical Evaluation]
+    K --> O
+    O --> P[Actual Outcomes and Business Contract]
+    P --> Q[Proof-Period Results]
 ```
 
 The historical evaluation path may use actual outcomes and scoring fields. The nightly inference path must not use actual cancellation outcomes.
@@ -384,66 +382,68 @@ The MVP is a local, offline recommendation pipeline. A production version could 
 - Model retraining and version management.
 - Manual recommendation overrides with an audit trail.
 - Alerts for nights approaching the walk-risk limit.
-- Booking snapshots to support genuine as-of-date recommendations.
+- Historical booking snapshots to support genuine as-of-date recommendations.
 
 These additions are not claims about current MVP functionality.
 
 ## Q9. What are the limitations?
 
-1. The dataset contains historical bookings and does not provide a live connection to the hotel's booking system.
+1. The dataset contains historical bookings and has no live connection to the hotel's booking system.
 2. The current MVP uses the available historical booking dataset rather than a continuously updated booking snapshot.
-3. The final-book dataset may include bookings that were made after the 14-day decision point.
+3. The final-book dataset may include bookings made after the 14-day decision point.
 4. Therefore, the current offline evaluation does not automatically represent the information available to a Revenue Manager 14 days before arrival.
 5. Cancellation behaviour may change over time because of seasonality, pricing, customer mix and external conditions.
 6. The model estimates cancellation probabilities; it cannot guarantee the actual number of cancellations.
 7. The walk-rate guardrail must be checked carefully before operational use.
 8. The selected model's Choose-period AUC does not guarantee lower Proof-period business cost or compliance with the walk-rate ceiling.
 9. The saved model and settings must be available and compatible with the runtime environment for the nightly script to work.
+10. The local pipeline has been tested in the current project environment, but execution from a separate fresh checkout has not yet been verified.
 
 ### 14-day decision-time data availability
 
-The nightly recommendation system is intended to simulate a Revenue Manager making an overbooking decision 14 days before the guest arrival date.
+The nightly recommendation system is intended to simulate a Revenue Manager making an overbooking decision 14 days before guest arrival.
 
 For each hotel-arrival night, only valid bookings recorded on or before the simulated decision date should be included in `bookings_on_book` and used to generate cancellation predictions. Bookings made after the decision date must not be included because they were not available to the Revenue Manager at that time.
 
 A valid booking must not be excluded simply because it is unpaid or uses a pay-at-hotel arrangement. Payment status does not determine whether a reservation existed at the decision date.
 
-**Historical data limitation:** The available final-booking dataset may contain bookings made after the simulated decision date and may not provide historical booking snapshots. Therefore, using the final dataset alone does not automatically reproduce the actual information available to a Revenue Manager 14 days before arrival.
+**Historical data limitation:** The available final-booking dataset may contain bookings made after the simulated decision date and may not provide historical booking snapshots. Therefore, using the final dataset alone does not reproduce the information actually available to a Revenue Manager 14 days before arrival.
 
 A genuine 14-day-ahead backtest requires historical booking snapshots or a reliable reconstruction of booking information as it existed on each decision date.
 
-Unless booking-time availability is reconstructed and enforced, the current offline MVP demonstrates the recommendation pipeline using the available historical booking data; it is not a validated 14-day-ahead operational simulation. The limitation must be clearly disclosed in the results and presentation.
+Unless booking-time availability is reconstructed and enforced, the current offline MVP demonstrates the recommendation pipeline using the available historical booking data; it is not a validated 14-day-ahead operational simulation. This limitation must be clearly disclosed in results and presentation.
 
-The MVP must not claim that future bookings or cancellations can be predicted from information that was unavailable at the simulated decision time.
+The MVP must not claim that future bookings or cancellations can be predicted from information unavailable at the simulated decision time.
 
 ### Expected cancellations, safety buffer and recommended oversell
 
 These are three separate concepts:
 
 - **Expected cancellations:** The sum of cancellation probabilities predicted for bookings included in the prediction input.
-- **Safety buffer:** A validated and frozen allowance that protects the hotel against uncertainty in cancellation predictions. The current agreed global buffer is 3 rooms.
-- **Recommended oversell:** The integer number of additional bookings recommended after accounting for expected cancellations and the safety buffer.
+- **Safety buffer:** A frozen allowance that protects the hotel against uncertainty in cancellation predictions. The current saved global buffer is 3 rooms.
+- **Recommended oversell:** The non-negative integer number of additional bookings recommended after accounting for expected cancellations and the safety buffer.
 
-The conceptual relationship is:
+The implemented calculation is:
 
-`Recommended oversell = Expected cancellations - Safety buffer`
+`recommended_oversell = max(0, round(expected_cancellations - buffer))`
 
-The final calculation, rounding rules and non-negative constraints must follow the Model Lead's verified and committed buffer methodology. Recommendations must also be evaluated against the project's walk-rate ceiling.
+Recommendations must also be evaluated against the project's walk-rate ceiling.
 
 ## Q10. What are the main risks and mitigations?
 
 | Risk | Impact | Mitigation |
 |---|---|---|
-| Target leakage | Unrealistically good model performance | Use only approved booking-time predictors and exclude post-outcome fields |
+| Target leakage | Unrealistically good model performance | Use approved booking-time predictors and exclude post-outcome fields |
 | Temporal overfitting | Poor performance on future bookings | Use chronological Train, Choose and Proof periods; exclude `arrival_date_year` from the selected Random Forest |
 | Excessive overselling | Guests may need to be relocated | Enforce the 10-per-1,000 walk-rate ceiling |
 | Under-overselling | Empty rooms and lost revenue | Evaluate expected cancellations and the frozen buffer using the business contract |
-| Incorrect model integration | Invalid nightly recommendations | Agree on the saved artifact, feature interface, class mapping and settings; test predictions |
+| Incorrect model integration | Invalid nightly recommendations | Load the saved artifact and validate feature interface, class mapping and settings |
 | Changing cancellation behaviour | Model performance may deteriorate | Monitor performance and plan periodic retraining |
 | Final-book information leakage | Offline results may overstate practical performance | Disclose the limitation and develop an as-of-date booking-snapshot roadmap |
-| Missing or incompatible saved artifacts | Nightly execution may fail | Commit the selected model pipeline and settings; test from a fresh checkout |
+| Missing or incompatible saved artifacts | Nightly execution may fail | Include the selected model pipeline and settings in delivery; verify a fresh checkout |
 | Incorrect probability mapping | Predicted cancellations may be calculated incorrectly | Verify that probability column 1 represents `is_canceled = 1` |
-| Buffer or rounding mismatch | Inconsistent oversell recommendations | Use the Model Lead's committed buffer implementation and test edge cases |
+| Buffer or rounding mismatch | Inconsistent oversell recommendations | Load the saved buffer and test the implemented rounding and non-negative handling |
+| Prior Proof exposure | Proof may not represent a completely untouched holdout | Disclose the earlier exploratory run and treat the corrected result as a frozen follow-up, not an untouched holdout |
 
 ## Q11. What is out of scope for the MVP?
 
