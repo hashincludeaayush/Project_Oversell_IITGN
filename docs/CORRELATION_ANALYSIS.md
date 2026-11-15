@@ -57,13 +57,28 @@ and the numeric VIF results do not indicate severe multicollinearity. Keep the
 
 The Model Lead must still:
 
-1. Compare the selected Random Forest with and without the most redundant
-   features as a sensitivity check on the Choose period.
-2. Keep the existing 22-feature model if removing features does not improve
-   Choose-period business cost while respecting the walk ceiling.
-3. Use business cost and the walk-rate ceiling—not correlation alone—to make
-   the final selection.
-4. Report any feature-interface change before the Build Lead saves the model.
+1. Use business cost and the walk-rate ceiling—not correlation alone—to assess
+   sensitivity.
+2. Report any feature-interface change before the Build Lead saves the model.
+
+## Choose-period sensitivity check
+
+The selected Random Forest configuration was refit on Train and evaluated on
+Choose after removing the strongest numeric association's features
+individually and together. Every variant found a compliant buffer, but every
+variant had lower AUC than the frozen 22-feature policy.
+
+| Interface | Features | Buffer | AUC | Choose cost (EUR) | Walks per 1,000 |
+|---|---:|---:|---:|---:|---:|
+| Full approved interface | 22 | 3 | 0.821727 | 1,384,174.34 | 8.150 |
+| Remove `is_repeated_guest` | 21 | 2 | 0.818008 | 1,237,839.13 | 9.700 |
+| Remove `previous_bookings_not_canceled` | 21 | 3 | 0.812862 | 1,367,780.58 | 7.770 |
+| Remove both | 20 | 3 | 0.802092 | 1,411,886.41 | 8.740 |
+
+The single-feature variants show that lower Choose cost alone would select a
+different policy from the agreed highest-compliant-AUC rule. The full
+22-feature interface is therefore retained, and the saved policy remains
+unchanged. This sensitivity check does not use Proof data.
 
 The categorical associations should be considered when explaining feature
 importance. They do not authorize use of `agent`, `company`, or any other
